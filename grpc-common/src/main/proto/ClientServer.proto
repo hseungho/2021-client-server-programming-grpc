@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+service ClientServerProto {
+  rpc getAllStudentData(google.protobuf.Empty) returns (StudentList);
+  rpc getAllCourseData(google.protobuf.Empty) returns (CourseList);
+}
+
+message Student {
+  string id = 1;
+  string name = 2;
+  string department = 3;
+  repeated string completedCourseList = 4;
+}
+
+message Course {
+  string id = 1;
+  string profName = 2;
+  string courseName = 3;
+  repeated string prerequisite = 4;
+}
+
+message StudentList {
+  repeated Student student = 1;
+}
+
+message CourseList {
+  repeated Course course = 1;
+}
