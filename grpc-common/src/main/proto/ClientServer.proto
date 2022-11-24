@@ -22,9 +22,11 @@ message Course {
 }
 
 message StudentList {
-  repeated Student student = 1;
+  string status = 1;
+  repeated Student student = 2;
 }
 
 message CourseList {
-  repeated Course course = 1;
+  string status = 1;
+  repeated Course course = 2;
 }

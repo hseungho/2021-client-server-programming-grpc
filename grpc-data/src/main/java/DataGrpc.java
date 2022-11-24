@@ -1,60 +1,43 @@
-import com.google.protobuf.Empty;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
-public class ServerGrpc implements ServerInterface{
-
-    public static ServerGrpc instance;
-    public static ServerGrpc getInstance() {
-        return instance != null ? instance : new ServerGrpc();
+public class DataGrpc {
+    public static DataGrpc instance;
+    public static DataGrpc getInstance() {
+        return instance != null ? instance : new DataGrpc();
     }
 
     private Server server;
-    private ManagedChannel channel;
-    private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
+    private static StudentList studentList;
 
-    public ServerGrpc() {
-        init();
-    }
-
-    private void init() {
-        initChannel();
-        initStub();
-    }
-
-    private void initChannel() {
-        channel = ManagedChannelBuilder
-                .forAddress("localhost", 9090)
-                .usePlaintext()
-                .build();
-    }
-
-    private void initStub() {
-        stub = ClientServerProtoGrpc.newBlockingStub(channel);
+    public DataGrpc() {
+        try {
+            studentList = new StudentList("Students.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void start() {
-        System.out.println("<<<<< SERVER START >>>>>");
-        this.startServer();
+        System.out.println("<<<<< DATA SERVER START >>>>>");
+        startServer();
     }
 
-    @Override
-    public ClientServer.StudentList getAllStudentList() {
+    public List<Student> getAllStudentList() throws MyException.NullDataException {
         System.out.println("CALLED: getAllStudentList()");
-        return stub.getAllStudentData(Empty.newBuilder().build());
+        return studentList.getAllStudentRecords();
     }
 
     private void startServer() {
         Thread serverThread = new Thread(() -> {
-            int port = 8080;
+            int port = 9090;
             server = NettyServerBuilder
                     .forAddress(new InetSocketAddress("localhost", port))
-                    .addService(new ServerClientServerImpl())
+                    .addService(new DataClientServerImpl())
                     .build();
 
             try {
@@ -65,8 +48,8 @@ public class ServerGrpc implements ServerInterface{
             }
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.err.println("\nServer: gRPC 서버를 종료합니다.");
-                System.err.println("Server: 서버를 종료합니다.");
+                System.err.println("\nData Server: gRPC 서버를 종료합니다.");
+                System.err.println("Data Server: 서버를 종료합니다.");
                 System.err.println(">>> 프로그램이 종료됩니다.");
                 try {
                     Thread.sleep(1500);
