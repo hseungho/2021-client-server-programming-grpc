@@ -19,5 +19,10 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void addStudent(ClientServer.Student request, StreamObserver<ClientServer.Status> responseObserver) {
+
+
+    }
 
 }

@@ -6,6 +6,8 @@ import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerGrpc implements GrpcInterface {
 
@@ -45,14 +47,38 @@ public class ServerGrpc implements GrpcInterface {
 
     @Override
     public ClientServer.StudentList getAllStudentList() {
-        System.out.println("CALLED METHOD: getAllStudentList");
+        System.out.println("LOG INFO: get all student list");
         return stub.getAllStudentData(Empty.newBuilder().build());
     }
 
     @Override
     public ClientServer.CourseList getAllCourseList() {
-        System.out.println("CALLED METHOD: getAllCourseList");
+        System.out.println("LOG INFO: get all course list");
         return stub.getAllCourseData(Empty.newBuilder().build());
+    }
+
+    @Override
+    public ClientServer.Status addStudent(ClientServer.Student student) {
+        System.out.println("LOG INFO: add student");
+        if(isExistStudentId(student.getId())) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage("This student id is already exists.")
+                    .build();
+        }
+        return stub.addStudent(student);
+    }
+
+    @Override
+    public ClientServer.StudentIdList getStudentIdList() {
+        System.out.println("LOG INFO: get student id list");
+        return stub.getStudentIdList(Empty.newBuilder().build());
+    }
+
+    private boolean isExistStudentId(String id) {
+        ClientServer.StudentIdList studentIdList = getStudentIdList();
+        List<String> studentIds = new ArrayList<>(studentIdList.getIdList());
+        return studentIds.contains(id);
     }
 
     private void startServer() {

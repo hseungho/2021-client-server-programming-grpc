@@ -2,6 +2,9 @@ import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,13 +15,13 @@ public class ClientGrpc {
         return instance != null ? instance : new ClientGrpc();
     }
 
-    private Scanner sc;
+    private BufferedReader br;
     private ManagedChannel channel;
     private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
     private boolean isRunning;
 
     public ClientGrpc() {
-        sc = new Scanner(System.in);
+        br = new BufferedReader(new InputStreamReader(System.in));
         init();
     }
 
@@ -38,15 +41,12 @@ public class ClientGrpc {
         stub = ClientServerProtoGrpc.newBlockingStub(channel);
     }
 
-    public void start() {
+    public void start() throws IOException {
         isRunning = true;
-
-        while(isRunning) {
-            printMenu();
-        }
+        printMenu();
     }
 
-    private void printMenu() {
+    private void printMenu() throws IOException {
         System.out.println();
         System.out.println("******************** MENU *********************");
         System.out.println("1. List Students");
@@ -62,19 +62,25 @@ public class ClientGrpc {
         this.selectMenu();
     }
 
-    private void selectMenu() {
-        String s = sc.next().toLowerCase();
-        switch (s) {
-            case "1" -> showStudentList();
-            case "2" -> showCourseList();
-            case "3" -> addStudent();
-            case "4" -> deleteStudent();
-            case "5" -> addCourse();
-            case "6" -> deleteCourse();
-            case "7" -> registerCourse();
-            case "8" -> showRegister();
-            case "x" -> isRunning = false;
-            default -> {}
+    private void selectMenu() throws IOException {
+        while(isRunning) {
+            try {
+                String s = br.readLine().toLowerCase();
+                switch (s) {
+                    case "1" -> showStudentList();
+                    case "2" -> showCourseList();
+                    case "3" -> addStudent();
+                    case "4" -> deleteStudent();
+                    case "5" -> addCourse();
+                    case "6" -> deleteCourse();
+                    case "7" -> registerCourse();
+                    case "8" -> showRegister();
+                    case "x" -> isRunning = false;
+                    default -> System.out.println("Incorrect Menu !!");
+                }
+            } catch (MyException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -116,7 +122,32 @@ public class ClientGrpc {
         System.out.println(result);
     }
 
-    private void addStudent() {
+    private void addStudent() throws IOException, MyException {
+        System.out.println("<<<<<<<<<<<<<<   Add Student   >>>>>>>>>>>>>>");
+        System.out.println("------Student Information------");
+        System.out.print("Student ID: "); String studentId = br.readLine().trim();
+        System.out.print("Student Name: "); String studentName = br.readLine().trim();
+        System.out.print("Student Department: "); String studentDept = br.readLine().trim();
+        System.out.print("Student Completed Course List: "); String completedCourse = br.readLine().trim();
+        if(studentId.isBlank() || studentName.isBlank() || studentDept.isBlank()) {
+            throw new MyException.NullDataException("You have to input every student information.");
+        }
+        List<String> completedCourseList = List.of(completedCourse.split(" "));
+
+        ClientServer.Student student = ClientServer.Student.newBuilder()
+                .setId(studentId)
+                .setName(studentName)
+                .setDepartment(studentDept)
+                .addAllCompletedCourseList(completedCourseList)
+                .build();
+        ClientServer.Status status = stub.addStudent(student);
+        if(status.getStatus() == 201) {
+            System.out.println("ADD SUCCESS !!!");
+        } else if(status.getStatus() == 409) {
+            throw new MyException.DuplicationDataException(status.getMessage());
+        } else {
+            throw new MyException(status.getMessage());
+        }
     }
 
     private void deleteStudent() {

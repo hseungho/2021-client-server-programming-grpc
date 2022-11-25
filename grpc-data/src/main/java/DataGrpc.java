@@ -84,6 +84,16 @@ public class DataGrpc implements GrpcInterface {
         return  courseListResponse;
     }
 
+    @Override
+    public ClientServer.Status addStudent(ClientServer.Student student) {
+        return null;
+    }
+
+    @Override
+    public ClientServer.StudentIdList getStudentIdList() {
+        return null;
+    }
+
     private void startServer() {
         Thread serverThread = new Thread(() -> {
             int port = 9090;

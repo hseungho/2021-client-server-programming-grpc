@@ -19,4 +19,8 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getStudentIdList(Empty request, StreamObserver<ClientServer.StudentIdList> responseObserver) {
+
+    }
 }
