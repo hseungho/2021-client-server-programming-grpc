@@ -45,8 +45,14 @@ public class ServerGrpc implements ServerInterface{
 
     @Override
     public ClientServer.StudentList getAllStudentList() {
-        System.out.println("CALLED: getAllStudentList()");
+        System.out.println("CALLED METHOD: getAllStudentList");
         return stub.getAllStudentData(Empty.newBuilder().build());
+    }
+
+    @Override
+    public ClientServer.CourseList getAllCourseList() {
+        System.out.println("CALLED METHOD: getAllCourseList");
+        return stub.getAllCourseData(Empty.newBuilder().build());
     }
 
     private void startServer() {

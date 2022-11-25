@@ -1,4 +1,6 @@
 import com.google.protobuf.Empty;
+import entity.Student;
+import exception.MyException;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -10,29 +12,16 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
 
     @Override
     public void getAllStudentData(Empty request, StreamObserver<ClientServer.StudentList> responseObserver) {
-        ClientServer.StudentList studentListResponse;
-
-        try {
-            List<ClientServer.Student> responseList = new ArrayList<>();
-            for(Student student : dataGrpc.getAllStudentList()) {
-                ClientServer.Student responseStudent = ClientServer.Student.newBuilder()
-                                .setId(student.getStudentId())
-                                        .setName(student.getName())
-                                                .setDepartment(student.getDepartment())
-                                                        .build();
-                responseList.add(responseStudent);
-            }
-            studentListResponse = ClientServer.StudentList.newBuilder()
-                    .setStatus("SUCCESS")
-                    .addAllStudent(responseList)
-                    .build();
-
-        } catch (MyException.NullDataException e) {
-            studentListResponse = ClientServer.StudentList.newBuilder()
-                    .setStatus("FAILED_NO_DATA")
-                    .build();
-        }
+        ClientServer.StudentList studentListResponse = dataGrpc.getAllStudentList();
         responseObserver.onNext(studentListResponse);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void getAllCourseData(Empty request, StreamObserver<ClientServer.CourseList> responseObserver) {
+        ClientServer.CourseList courseListResponse = dataGrpc.getAllCourseList();
+        responseObserver.onNext(courseListResponse);
+        responseObserver.onCompleted();
+    }
+
 }

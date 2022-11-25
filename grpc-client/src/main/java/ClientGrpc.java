@@ -1,4 +1,5 @@
 import com.google.protobuf.Empty;
+import entity.Student;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -51,10 +52,10 @@ public class ClientGrpc {
         System.out.println("******************** MENU *********************");
         System.out.println("1. List Students");
         System.out.println("2. List Courses");
-        System.out.println("3. Add Student");
-        System.out.println("4. Delete Student");
-        System.out.println("5. Add Course");
-        System.out.println("6. Delete Course");
+        System.out.println("3. Add entity.Student");
+        System.out.println("4. Delete entity.Student");
+        System.out.println("5. Add entity.Course");
+        System.out.println("6. Delete entity.Course");
         System.out.println("7. Make Reservation");
         System.out.println("8. List Reservation");
         System.out.println("x. Exit");
@@ -89,7 +90,7 @@ public class ClientGrpc {
     }
 
     private void printStudent(List<ClientServer.Student> studentList) {
-        System.out.println("<<<<<<<<<<<<<<   Student List   >>>>>>>>>>>>>>");
+        System.out.println("<<<<<<<<<<<<<<   entity.Student List   >>>>>>>>>>>>>>");
         for(ClientServer.Student student_proto : studentList) {
             Student student = Student.toEntity(student_proto);
             System.out.println(student);

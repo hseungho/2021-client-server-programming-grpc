@@ -1,14 +1,19 @@
+import entity.Student;
+import exception.MyException;
+
 import java.io.*;
 import java.util.ArrayList;
 
 public class StudentList {
 	protected ArrayList<Student> vStudent;
 	private File studentFile;
+	private String filePath;
 
-	public StudentList(String sStudentFileName) throws FileNotFoundException, IOException {
-		InputStream is = getClass().getResourceAsStream(sStudentFileName);
+	public StudentList(String sStudentFileName) throws IOException {
+		this.filePath = sStudentFileName;
+		InputStream is = getClass().getResourceAsStream(this.filePath);
 		BufferedReader objStudentFile = new BufferedReader(new InputStreamReader(is));
-		this.vStudent = new ArrayList<Student>();
+		this.vStudent = new ArrayList<>();
 		while (objStudentFile.ready()) {
 			String stuInfo = objStudentFile.readLine();
 			if (!stuInfo.equals("")) {
@@ -19,7 +24,7 @@ public class StudentList {
 	}
 
 	public ArrayList<Student> getAllStudentRecords() throws MyException.NullDataException {
-		if(this.vStudent.size()==0) throw new MyException.NullDataException("~~~~~~~~Student data is null~~~~~~~~~");
+		if(this.vStudent.size()==0) throw new MyException.NullDataException("~~~~~~~~entity.Student data is null~~~~~~~~~");
 		return this.vStudent;
 	}
 	
@@ -27,7 +32,7 @@ public class StudentList {
 		String[] strStudentInfo = studentInfo.split(" ");
 		String studentId = strStudentInfo[0];
 		for(Student student:this.vStudent) 
-			if(student.match(studentId)) throw new MyException.DuplicationDataException("~~~~~~~Student ID "+studentId+" is already exists!!!~~~~~");
+			if(student.match(studentId)) throw new MyException.DuplicationDataException("~~~~~~~entity.Student ID "+studentId+" is already exists!!!~~~~~");
 		if(this.vStudent.add(new Student(studentInfo))) return true;
 		else return false;
 	}
