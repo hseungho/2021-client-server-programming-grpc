@@ -3,6 +3,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 @Data @AllArgsConstructor
@@ -12,7 +13,7 @@ public class Student implements Serializable{
 	private String studentId;
     private String name;
     private String department;
-    private ArrayList<String> completedCourseList;
+    private List<String> completedCourseList;
 
     public Student(String inputString) {
         StringTokenizer stringTokenizer = new StringTokenizer(inputString);
@@ -34,7 +35,7 @@ public class Student implements Serializable{
     public String toString() {
         String stringReturn = this.studentId + " " + this.name + " " + this.department;
         for (int i = 0; i < this.completedCourseList.size(); i++) {
-            stringReturn = stringReturn + " " + this.completedCourseList.get(i).toString();
+            stringReturn = stringReturn + " " + this.completedCourseList.get(i);
         }
         return stringReturn;
     }
@@ -44,7 +45,7 @@ public class Student implements Serializable{
                 dto.getId(),
                 dto.getName(),
                 dto.getDepartment(),
-                (ArrayList<String>) dto.getCompletedCourseListList()
+                new ArrayList<>(dto.getCompletedCourseListList())
         );
     }
 

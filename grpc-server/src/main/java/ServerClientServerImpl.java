@@ -11,4 +11,13 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void getAllCourseData(Empty request, StreamObserver<ClientServer.CourseList> responseObserver) {
+        ClientServer.CourseList response = serverGrpc.getAllCourseList();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+
 }

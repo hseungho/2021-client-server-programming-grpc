@@ -79,24 +79,41 @@ public class ClientGrpc {
     }
 
     private void showStudentList() {
-        ClientServer.StudentList studentList;
-        studentList = stub.getAllStudentData(Empty.newBuilder().build());
+        ClientServer.StudentList studentList = stub.getAllStudentData(Empty.newBuilder().build());
         switch (studentList.getStatus()) {
-            case "SUCCESS" -> printStudent(studentList.getStudentList());
-            case "FAILED_NO_DATA" -> {}
+            case StringConstant.STATUS_SUCCESS -> printStudent(studentList.getStudentList());
+            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- NO STUDENT DATA ---");
             default -> {}
         }
     }
 
     private void printStudent(List<ClientServer.Student> studentList) {
         System.out.println("<<<<<<<<<<<<<<   Student List   >>>>>>>>>>>>>>");
+        StringBuilder result = new StringBuilder();
         for(ClientServer.Student student_proto : studentList) {
             Student student = Student.toEntity(student_proto);
-            System.out.println(student);
+            result.append(student).append("\n");
         }
+        System.out.println(result);
     }
 
     private void showCourseList() {
+        ClientServer.CourseList courseList = stub.getAllCourseData(Empty.newBuilder().build());
+        switch (courseList.getStatus()) {
+            case StringConstant.STATUS_SUCCESS -> printCourse(courseList.getCourseList());
+            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- No COURSE DATA ---");
+            default -> {}
+        }
+    }
+
+    private void printCourse(List<ClientServer.Course> courseList) {
+        System.out.println("<<<<<<<<<<<<<<   Course List   >>>>>>>>>>>>>>");
+        StringBuilder result = new StringBuilder();
+        for(ClientServer.Course course_proto : courseList) {
+            Course course = Course.toEntity(course_proto);
+            result.append(course).append("\n");
+        }
+        System.out.println(result);
     }
 
     private void addStudent() {

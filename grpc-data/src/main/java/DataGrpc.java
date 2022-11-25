@@ -46,12 +46,12 @@ public class DataGrpc implements GrpcInterface {
                 responseList.add(responseStudent);
             }
             studentListResponse = ClientServer.StudentList.newBuilder()
-                    .setStatus("SUCCESS")
+                    .setStatus(StringConstant.STATUS_SUCCESS)
                     .addAllStudent(responseList)
                     .build();
         } catch (MyException.NullDataException e) {
             studentListResponse = ClientServer.StudentList.newBuilder()
-                    .setStatus("FAILED_NO_DATA")
+                    .setStatus(StringConstant.STATUS_FAILED_NO_DATA)
                     .build();
         }
         return studentListResponse;
@@ -73,12 +73,12 @@ public class DataGrpc implements GrpcInterface {
                 responseList.add(responseCourse);
             }
             courseListResponse = ClientServer.CourseList.newBuilder()
-                    .setStatus("SUCCESS")
+                    .setStatus(StringConstant.STATUS_SUCCESS)
                     .addAllCourse(responseList)
                     .build();
         } catch (MyException.NullDataException e) {
             courseListResponse = ClientServer.CourseList.newBuilder()
-                    .setStatus("FAILED_NO_DATA")
+                    .setStatus(StringConstant.STATUS_FAILED_NO_DATA)
                     .build();
         }
         return  courseListResponse;
