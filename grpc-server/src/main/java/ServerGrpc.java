@@ -7,7 +7,7 @@ import io.grpc.netty.NettyServerBuilder;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-public class ServerGrpc implements ServerInterface{
+public class ServerGrpc implements GrpcInterface {
 
     public static ServerGrpc instance;
     public static ServerGrpc getInstance() {

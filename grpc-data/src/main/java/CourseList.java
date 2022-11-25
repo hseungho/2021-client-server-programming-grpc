@@ -1,6 +1,3 @@
-import entity.Course;
-import exception.MyException;
-
 import java.io.*;
 import java.util.ArrayList;
 
@@ -23,7 +20,7 @@ public class CourseList {
 	}
 	
 	public ArrayList<Course> getAllCourseRecords() throws MyException.NullDataException{
-		if(this.vCourse.size()==0) throw new MyException.NullDataException("~~~~~~~~entity.Course data is null~~~~~~~~~");
+		if(this.vCourse.size()==0) throw new MyException.NullDataException("~~~~~~~~Course data is null~~~~~~~~~");
 		return this.vCourse;
 	}
 	
@@ -31,7 +28,7 @@ public class CourseList {
 		String[] strCourseInfo = courseInfo.split(" ");
 		String courseId = strCourseInfo[0];
 		for(Course course:this.vCourse)
-			if(course.match(courseId)) throw new MyException.DuplicationDataException("~~~~~~~entity.Course ID "+courseId+" is already exists!!!~~~~~");
+			if(course.match(courseId)) throw new MyException.DuplicationDataException("~~~~~~~Course ID "+courseId+" is already exists!!!~~~~~");
 		if(this.vCourse.add(new Course(courseInfo))) return true;
 		else return false;
 	}

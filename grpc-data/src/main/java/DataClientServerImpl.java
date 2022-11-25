@@ -1,10 +1,5 @@
 import com.google.protobuf.Empty;
-import entity.Student;
-import exception.MyException;
 import io.grpc.stub.StreamObserver;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServerProtoImplBase {
 

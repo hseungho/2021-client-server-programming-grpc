@@ -1,6 +1,3 @@
-import entity.Course;
-import entity.Student;
-import exception.MyException;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
 
@@ -9,7 +6,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataGrpc implements ServerInterface{
+public class DataGrpc implements GrpcInterface {
     public static DataGrpc instance;
     public static DataGrpc getInstance() {
         return instance != null ? instance : new DataGrpc();
@@ -22,6 +19,7 @@ public class DataGrpc implements ServerInterface{
     public DataGrpc() {
         try {
             studentList = new StudentList("Students.txt");
+            courseList = new CourseList("Courses.txt");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
