@@ -1,4 +1,5 @@
 import com.google.protobuf.Empty;
+import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.stub.StreamObserver;
 
 public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientServerProtoImplBase {
@@ -21,8 +22,9 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
 
     @Override
     public void addStudent(ClientServer.Student request, StreamObserver<ClientServer.Status> responseObserver) {
-
-
+        ClientServer.Status response = serverGrpc.addStudent(request);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
 }

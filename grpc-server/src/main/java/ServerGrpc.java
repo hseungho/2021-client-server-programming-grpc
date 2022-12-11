@@ -47,19 +47,19 @@ public class ServerGrpc implements GrpcInterface {
 
     @Override
     public ClientServer.StudentList getAllStudentList() {
-        System.out.println("LOG INFO: get all student list");
+        System.out.println("CALLED METHOD: getAllStudentList");
         return stub.getAllStudentData(Empty.newBuilder().build());
     }
 
     @Override
     public ClientServer.CourseList getAllCourseList() {
-        System.out.println("LOG INFO: get all course list");
+        System.out.println("CALLED METHOD: getAllCourseList");
         return stub.getAllCourseData(Empty.newBuilder().build());
     }
 
     @Override
     public ClientServer.Status addStudent(ClientServer.Student student) {
-        System.out.println("LOG INFO: add student");
+        System.out.println("CALLED METHOD: addStudent");
         if(isExistStudentId(student.getId())) {
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
@@ -75,6 +75,7 @@ public class ServerGrpc implements GrpcInterface {
         return stub.getStudentIdList(Empty.newBuilder().build());
     }
 
+    /** 학생 ID 유효성 검증 */
     private boolean isExistStudentId(String id) {
         ClientServer.StudentIdList studentIdList = getStudentIdList();
         List<String> studentIds = new ArrayList<>(studentIdList.getIdList());

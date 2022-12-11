@@ -43,10 +43,10 @@ public class ClientGrpc {
 
     public void start() throws IOException {
         isRunning = true;
-        printMenu();
+        selectMenu();
     }
 
-    private void printMenu() throws IOException {
+    private void printMenu() {
         System.out.println();
         System.out.println("******************** MENU *********************");
         System.out.println("1. List Students");
@@ -59,11 +59,11 @@ public class ClientGrpc {
         System.out.println("8. List Reservation");
         System.out.println("x. Exit");
         System.out.print("메뉴 입력: ");
-        this.selectMenu();
     }
 
     private void selectMenu() throws IOException {
         while(isRunning) {
+            this.printMenu();
             try {
                 String s = br.readLine().toLowerCase();
                 switch (s) {

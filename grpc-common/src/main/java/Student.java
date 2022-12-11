@@ -1,4 +1,5 @@
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-@Data @AllArgsConstructor
+@Data @AllArgsConstructor @Builder
 public class Student implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
@@ -25,6 +26,14 @@ public class Student implements Serializable{
     	while (stringTokenizer.hasMoreTokens()) {
     		this.completedCourseList.add(stringTokenizer.nextToken());
     	}
+    }
+
+    public static Student createStudent(ClientServer.Student dto) {
+        return Student.builder()
+                .studentId(dto.getId())
+                .name(dto.getName())
+                .department(dto.getDepartment())
+                .completedCourseList(dto.getCompletedCourseListList()).build();
     }
 
     public boolean match(String studentId) {

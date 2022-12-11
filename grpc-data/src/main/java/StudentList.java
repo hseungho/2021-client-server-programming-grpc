@@ -1,9 +1,10 @@
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class StudentList {
 	protected ArrayList<Student> vStudent;
-	private File studentFile;
 	private String filePath;
 
 	public StudentList(String sStudentFileName) throws IOException {
@@ -20,18 +21,36 @@ public class StudentList {
 		objStudentFile.close();
 	}
 
+	public void saveData() throws IOException {
+		File file = new File(getClass().getResourceAsStream(this.filePath).toString());
+		System.out.println(file.getAbsolutePath());
+		if(!file.exists()) {
+			if(file.createNewFile())
+				System.out.println("Create New File !!!");
+			else {
+				System.out.println("Cannot Create New File !!!");
+				return;
+			}
+		}
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+		for(int i=0; i<this.vStudent.size(); i++) {
+			writer.write(this.vStudent.get(i).toString()+"\n");
+		}
+		writer.flush();
+		writer.close();
+	}
+
 	public ArrayList<Student> getAllStudentRecords() throws MyException.NullDataException {
 		if(this.vStudent.size()==0) throw new MyException.NullDataException("~~~~~~~~Student data is null~~~~~~~~~");
 		return this.vStudent;
 	}
 	
-	public boolean addStudentRecord(String studentInfo) throws MyException.DuplicationDataException {
-		String[] strStudentInfo = studentInfo.split(" ");
-		String studentId = strStudentInfo[0];
-		for(Student student:this.vStudent) 
-			if(student.match(studentId)) throw new MyException.DuplicationDataException("~~~~~~~Student ID "+studentId+" is already exists!!!~~~~~");
-		if(this.vStudent.add(new Student(studentInfo))) return true;
-		else return false;
+	public boolean addStudentRecord(ClientServer.Student studentDto) throws IOException {
+		if(this.vStudent.add(Student.createStudent(studentDto))) {
+			this.saveData();
+			return true;
+		}
+		return false;
 	}
 
 	public boolean deleteStudentRecord(String studentId) {
@@ -55,21 +74,5 @@ public class StudentList {
 		return false;
 	}
 
-	public void saveData() throws IOException {
-		if(!this.studentFile.exists()) {
-			if(this.studentFile.createNewFile())
-				System.out.println("Create New File !!!");
-			else {
-				System.out.println("Cannot Create New File !!!");
-				return;
-			}
-		}
-		BufferedWriter writer = new BufferedWriter(new FileWriter(this.studentFile, false));
-		for(int i=0; i<this.vStudent.size(); i++) {
-			writer.write(this.vStudent.get(i).toString()+"\n");
-		}
-		writer.flush();
-		writer.close();
-	}
 	
 }

@@ -68,30 +68,36 @@ public class DataGrpc implements GrpcInterface {
                         .setId(course.getCourseId())
                         .setProfName(course.getProfName())
                         .setCourseName(course.getCourseName())
-                        .addAllPrerequisite(new ArrayList<>(course.getPrerequisite()))
-                        .build();
+                        .addAllPrerequisite(new ArrayList<>(course.getPrerequisite())).build();
                 responseList.add(responseCourse);
             }
             courseListResponse = ClientServer.CourseList.newBuilder()
                     .setStatus(StringConstant.STATUS_SUCCESS)
-                    .addAllCourse(responseList)
-                    .build();
+                    .addAllCourse(responseList).build();
         } catch (MyException.NullDataException e) {
-            courseListResponse = ClientServer.CourseList.newBuilder()
-                    .setStatus(StringConstant.STATUS_FAILED_NO_DATA)
-                    .build();
+            courseListResponse = ClientServer.CourseList.newBuilder().setStatus(StringConstant.STATUS_FAILED_NO_DATA).build();
         }
         return  courseListResponse;
     }
 
     @Override
-    public ClientServer.Status addStudent(ClientServer.Student student) {
-        return null;
+    public ClientServer.Status addStudent(ClientServer.Student student) throws IOException {
+        System.out.println("CALLED METHOD: addStudent");
+        return studentList.addStudentRecord(student) ?
+                ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
     }
 
     @Override
     public ClientServer.StudentIdList getStudentIdList() {
-        return null;
+        System.out.println("CALLED METHOD: getStudentIdList");
+        ClientServer.StudentIdList studentIdListResponse;
+        try {
+            List<String> studentIdList = studentList.getAllStudentRecords().stream().map(Student::getStudentId).toList();
+            studentIdListResponse = ClientServer.StudentIdList.newBuilder().addAllId(studentIdList).build();
+        } catch (MyException.NullDataException e) {
+            studentIdListResponse = ClientServer.StudentIdList.newBuilder().setStatus(StringConstant.STATUS_FAILED_NO_DATA).build();
+        }
+        return studentIdListResponse;
     }
 
     private void startServer() {

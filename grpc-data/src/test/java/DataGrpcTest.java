@@ -8,14 +8,14 @@ class DataGrpcTest {
     private final DataGrpc dataGrpc = DataGrpc.getInstance();
 
     @Test
-    @DisplayName("모든 학생 데이터 조회")
+    @DisplayName("Get all students list")
     void getAllStudentList() {
         ClientServer.StudentList studentList = dataGrpc.getAllStudentList();
         System.out.println(studentList);
     }
 
     @Test
-    @DisplayName("모든 강의 데이터 조회")
+    @DisplayName("get all courses list")
     void getAllCourseList() {
         ClientServer.CourseList courseList = dataGrpc.getAllCourseList();
         System.out.println(courseList);
