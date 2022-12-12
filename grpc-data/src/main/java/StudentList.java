@@ -4,6 +4,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class StudentList {
 	protected ArrayList<Student> vStudent;
@@ -23,7 +24,7 @@ public class StudentList {
 		objStudentFile.close();
 	}
 
-	public void saveData() throws IOException {
+	private void saveData() throws IOException {
 		URL path = getClass().getResource(this.filePath);
 		File file;
 		try {
@@ -31,7 +32,6 @@ public class StudentList {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-		System.out.println(file.getAbsolutePath());
 		if(!file.exists()) {
 			if(file.createNewFile())
 				System.out.println("Create New File !!!");
@@ -51,6 +51,10 @@ public class StudentList {
 	public ArrayList<Student> getAllStudentRecords() throws MyException.NullDataException {
 		if(this.vStudent.size()==0) throw new MyException.NullDataException("~~~~~~~~Student data is null~~~~~~~~~");
 		return this.vStudent;
+	}
+
+	public List<String> getAllStudentId() {
+		return this.vStudent.stream().map(Student::getStudentId).toList();
 	}
 	
 	public boolean addStudentRecord(ClientServer.Student studentDto) throws IOException {

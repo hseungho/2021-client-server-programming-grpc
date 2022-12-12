@@ -22,8 +22,15 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
     }
 
     @Override
-    public void getStudentIdList(Empty request, StreamObserver<ClientServer.StudentIdList> responseObserver) {
-        ClientServer.StudentIdList response = dataGrpc.getStudentIdList();
+    public void getStudentIdList(Empty request, StreamObserver<ClientServer.IdList> responseObserver) {
+        ClientServer.IdList response = dataGrpc.getStudentIdList();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getCourseIdList(Empty request, StreamObserver<ClientServer.IdList> responseObserver) {
+        ClientServer.IdList response = dataGrpc.getCourseIdList();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -45,6 +52,18 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
         ClientServer.Status responseStatus;
         try {
             responseStatus = dataGrpc.deleteStudent(request);
+        } catch (IOException e) {
+            responseStatus = ClientServer.Status.newBuilder().setStatus(503).build();
+        }
+        responseObserver.onNext(responseStatus);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status responseStatus;
+        try {
+            responseStatus = dataGrpc.addCourse(request);
         } catch (IOException e) {
             responseStatus = ClientServer.Status.newBuilder().setStatus(503).build();
         }

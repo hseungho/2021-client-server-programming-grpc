@@ -70,9 +70,15 @@ public class ServerGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.StudentIdList getStudentIdList() {
+    public ClientServer.IdList getStudentIdList() {
         System.out.println("CALLED METHOD: getStudentIdList");
         return stub.getStudentIdList(Empty.newBuilder().build());
+    }
+
+    @Override
+    public ClientServer.IdList getCourseIdList() {
+        System.out.println("CALLED METHOD: getCourseIdList");
+        return stub.getCourseIdList(Empty.newBuilder().build());
     }
 
     @Override
@@ -86,11 +92,29 @@ public class ServerGrpc implements GrpcInterface {
         return stub.deleteStudent(studentId);
     }
 
+    @Override
+    public ClientServer.Status addCourse(ClientServer.Course course) {
+        System.out.println("CALLED METHOD: addCourse");
+        if(isExistCourseId(course.getId())) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage("This course id is already exists.")
+                    .build();
+        }
+        return stub.addCourse(course);
+    }
+
     /** 학생 ID 유효성 검증 */
     private boolean isExistStudentId(String id) {
-        ClientServer.StudentIdList studentIdList = getStudentIdList();
+        ClientServer.IdList studentIdList = getStudentIdList();
         List<String> studentIds = new ArrayList<>(studentIdList.getIdList());
         return studentIds.contains(id);
+    }
+
+    private boolean isExistCourseId(String id) {
+        ClientServer.IdList courseIdList = getCourseIdList();
+        List<String> courseIds = new ArrayList<>(courseIdList.getIdList());
+        return courseIds.contains(id);
     }
 
     private void startServer() {
