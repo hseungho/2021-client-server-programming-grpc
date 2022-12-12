@@ -5,4 +5,5 @@ public interface GrpcInterface {
     ClientServer.CourseList getAllCourseList();
     ClientServer.Status addStudent(ClientServer.Student student) throws IOException;
     ClientServer.StudentIdList getStudentIdList();
+    ClientServer.Status deleteStudent(ClientServer.Id studentId) throws IOException;
 }

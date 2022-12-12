@@ -71,8 +71,19 @@ public class ServerGrpc implements GrpcInterface {
 
     @Override
     public ClientServer.StudentIdList getStudentIdList() {
-        System.out.println("LOG INFO: get student id list");
+        System.out.println("CALLED METHOD: getStudentIdList");
         return stub.getStudentIdList(Empty.newBuilder().build());
+    }
+
+    @Override
+    public ClientServer.Status deleteStudent(ClientServer.Id studentId) {
+        System.out.println("CALLED METHOD: deleteStudent");
+        if(!isExistStudentId(studentId.getId())) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage("This student id is not exist.").build();
+        }
+        return stub.deleteStudent(studentId);
     }
 
     /** 학생 ID 유효성 검증 */

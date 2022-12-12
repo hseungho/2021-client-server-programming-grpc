@@ -141,17 +141,18 @@ public class ClientGrpc {
                 .addAllCompletedCourseList(completedCourseList)
                 .build();
         ClientServer.Status status = stub.addStudent(student);
-        if(status.getStatus() == 201) {
-            System.out.println("ADD SUCCESS !!!");
-        } else if(status.getStatus() == 409) {
-            throw new MyException.DuplicationDataException(status.getMessage());
-        } else {
-            throw new MyException(status.getMessage());
-        }
+        responseStatus(status, "ADD SUCCESS !!!");
     }
 
-    private void deleteStudent() {
-        
+    private void deleteStudent() throws IOException, MyException {
+        System.out.println("<<<<<<<<<<<<<<   Delete Student   >>>>>>>>>>>>>>");
+        System.out.print("Student ID: "); String studentId = br.readLine().trim();
+        if(studentId.isBlank()) {
+            throw new MyException.NullDataException("You have to input student id deleted.");
+        }
+        ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(studentId).build();
+        ClientServer.Status responseStatus = stub.deleteStudent(requestId);
+        responseStatus(responseStatus, "DELETE SUCCESS !!!");
     }
 
     private void addCourse() {
@@ -168,6 +169,16 @@ public class ClientGrpc {
 
     private void showRegister() {
         
+    }
+
+    private void responseStatus(ClientServer.Status status, String successMessage) throws MyException{
+        if(status.getStatus() == 201) {
+            System.out.println(successMessage);
+        } else if(status.getStatus() == 409) {
+            throw new MyException.DuplicationDataException(status.getMessage());
+        } else {
+            throw new MyException(status.getMessage());
+        }
     }
 
 }

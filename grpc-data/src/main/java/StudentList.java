@@ -61,26 +61,18 @@ public class StudentList {
 		return false;
 	}
 
-	public boolean deleteStudentRecord(String studentId) {
+	public boolean deleteStudentRecord(String studentId) throws IOException {
 		for (int i = 0; i < this.vStudent.size(); i++) {
 			Student student = this.vStudent.get(i);
 			if (student.match(studentId)) {
-				if(this.vStudent.remove(student)) return true;
+				if(this.vStudent.remove(student)) {
+					this.saveData();
+					return true;
+				}
 				else return false;
 			}
 		}
 		return false;
 	}
-	
-	public boolean isRegisteredStudent(String sSID) {
-		for (int i = 0; i < this.vStudent.size(); i++) {
-			Student objStudent = (Student) this.vStudent.get(i);
-			if (objStudent.match(sSID)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
-	
 }

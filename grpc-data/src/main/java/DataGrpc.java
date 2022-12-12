@@ -100,6 +100,13 @@ public class DataGrpc implements GrpcInterface {
         return studentIdListResponse;
     }
 
+    @Override
+    public ClientServer.Status deleteStudent(ClientServer.Id studentId) throws IOException {
+        System.out.println("CALLED METHOD: deleteStudent");
+        return studentList.deleteStudentRecord(studentId.getId()) ?
+                ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
+    }
+
     private void startServer() {
         Thread serverThread = new Thread(() -> {
             int port = 9090;
