@@ -6,6 +6,8 @@ import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerGrpc implements GrpcInterface {
 
@@ -53,6 +55,31 @@ public class ServerGrpc implements GrpcInterface {
     public ClientServer.CourseList getAllCourseList() {
         System.out.println("CALLED METHOD: getAllCourseList");
         return stub.getAllCourseData(Empty.newBuilder().build());
+    }
+
+    @Override
+    public ClientServer.Status addStudent(ClientServer.Student student) {
+        System.out.println("CALLED METHOD: addStudent");
+        if(isExistStudentId(student.getId())) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage("This student id is already exists.")
+                    .build();
+        }
+        return stub.addStudent(student);
+    }
+
+    @Override
+    public ClientServer.StudentIdList getStudentIdList() {
+        System.out.println("LOG INFO: get student id list");
+        return stub.getStudentIdList(Empty.newBuilder().build());
+    }
+
+    /** 학생 ID 유효성 검증 */
+    private boolean isExistStudentId(String id) {
+        ClientServer.StudentIdList studentIdList = getStudentIdList();
+        List<String> studentIds = new ArrayList<>(studentIdList.getIdList());
+        return studentIds.contains(id);
     }
 
     private void startServer() {
