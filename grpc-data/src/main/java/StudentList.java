@@ -1,4 +1,6 @@
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,7 +24,13 @@ public class StudentList {
 	}
 
 	public void saveData() throws IOException {
-		File file = new File(getClass().getResourceAsStream(this.filePath).toString());
+		URL path = getClass().getResource(this.filePath);
+		File file;
+		try {
+			file = Paths.get(path.toURI()).toFile();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 		System.out.println(file.getAbsolutePath());
 		if(!file.exists()) {
 			if(file.createNewFile())
