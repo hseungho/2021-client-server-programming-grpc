@@ -1,9 +1,12 @@
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CourseList {
 	private ArrayList<Course> vCourse;
-	private File courseFile;
 	private String filePath;
 	
 	public CourseList(String cCourseFileName) throws IOException {
@@ -18,20 +21,48 @@ public class CourseList {
 		}
 		objCourseFile.close();
 	}
+
+	private void saveData() throws IOException {
+		URL path = getClass().getResource(this.filePath);
+		File file;
+		try {
+			file = Paths.get(path.toURI()).toFile();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		if(!file.exists()) {
+			if(file.createNewFile())
+				System.out.println("Create New File !!!");
+			else {
+				System.out.println("Cannot Create New File !!!");
+				return;
+			}
+		}
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+		for(int i=0; i<this.vCourse.size(); i++) {
+			writer.write(this.vCourse.get(i).toString()+"\n");
+		}
+		writer.flush();
+		writer.close();
+	}
 	
 	public ArrayList<Course> getAllCourseRecords() throws MyException.NullDataException{
 		if(this.vCourse.size()==0) throw new MyException.NullDataException("~~~~~~~~Course data is null~~~~~~~~~");
 		return this.vCourse;
 	}
-	
-	public boolean addCourseRecord(String courseInfo) throws MyException.DuplicationDataException {
-		String[] strCourseInfo = courseInfo.split(" ");
-		String courseId = strCourseInfo[0];
-		for(Course course:this.vCourse)
-			if(course.match(courseId)) throw new MyException.DuplicationDataException("~~~~~~~Course ID "+courseId+" is already exists!!!~~~~~");
-		if(this.vCourse.add(new Course(courseInfo))) return true;
-		else return false;
+
+	public List<String> getAllCourseId() {
+		return this.vCourse.stream().map(Course::getCourseId).toList();
 	}
+
+	public boolean addCourseRecord(ClientServer.Course courseDto) throws IOException {
+		if(this.vCourse.add(Course.createCourse(courseDto))) {
+			this.saveData();
+			return true;
+		}
+		return false;
+	}
+
 	
 	public boolean deleteCourseRecord(String courseId) {
 		for(Course course : this.vCourse) {
@@ -50,23 +81,6 @@ public class CourseList {
 				return true;
 		}
 		return false;
-	}
-
-	public void saveData() throws IOException {
-		if(!this.courseFile.exists()) {
-			if(this.courseFile.createNewFile())
-				System.out.println("Create New File !!!");
-			else {
-				System.out.println("Cannot Create New File !!!");
-				return;
-			}
-		}
-		BufferedWriter writer = new BufferedWriter(new FileWriter(this.courseFile, false));
-		for(int i=0; i<this.vCourse.size(); i++) {
-			writer.write(this.vCourse.get(i).toString()+"\n");
-		}
-		writer.flush();
-		writer.close();
 	}
 
 }

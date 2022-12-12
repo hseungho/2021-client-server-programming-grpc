@@ -1,6 +1,7 @@
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,6 +81,8 @@ public class ClientGrpc {
                 }
             } catch (MyException e) {
                 System.err.println(e.getMessage());
+            } catch (StatusRuntimeException e) {
+                System.err.println("sorry, we cannot service that request.");
             }
         }
     }
@@ -155,8 +158,25 @@ public class ClientGrpc {
         responseStatus(responseStatus, "DELETE SUCCESS !!!");
     }
 
-    private void addCourse() {
-        
+    private void addCourse() throws IOException, MyException {
+        System.out.println("<<<<<<<<<<<<<<   Add Course   >>>>>>>>>>>>>>");
+        System.out.println("------Course Information------");
+        System.out.print("Course ID: "); String courseId = br.readLine().trim();
+        System.out.print("Prof Name: "); String profName = br.readLine().trim();
+        System.out.print("Course Name: "); String courseName = br.readLine().trim();
+        System.out.print("Course Prerequisite List: "); String prerequisite = br.readLine().trim();
+        if(courseId.isBlank() || profName.isBlank() || courseName.isBlank()) {
+            throw new MyException.NullDataException("You have to input every course information.");
+        }
+        List<String> prerequisiteList = List.of(prerequisite.split(" "));
+
+        ClientServer.Course course = ClientServer.Course.newBuilder()
+                .setId(courseId)
+                .setProfName(profName)
+                .setCourseName(courseName)
+                .addAllPrerequisite(prerequisiteList).build();
+        ClientServer.Status status = stub.addCourse(course);
+        responseStatus(status, "ADD SUCCESS !!!");
     }
 
     private void deleteCourse() {

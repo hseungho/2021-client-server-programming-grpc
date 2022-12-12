@@ -6,8 +6,10 @@ service ClientServerProto {
   rpc getAllStudentData(google.protobuf.Empty) returns (StudentList);
   rpc getAllCourseData(google.protobuf.Empty) returns (CourseList);
   rpc addStudent(Student) returns (Status);
-  rpc getStudentIdList(google.protobuf.Empty) returns (StudentIdList);
+  rpc getStudentIdList(google.protobuf.Empty) returns (IdList);
   rpc deleteStudent(Id) returns (Status);
+  rpc getCourseIdList(google.protobuf.Empty) returns (IdList);
+  rpc addCourse(Course) returns (Status);
 }
 
 message Status {
@@ -31,7 +33,7 @@ message StudentList {
   repeated Student student = 2;
 }
 
-message StudentIdList {
+message IdList {
   string status = 1;
   repeated string id = 2;
 }

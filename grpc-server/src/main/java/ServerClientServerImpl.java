@@ -33,4 +33,11 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status response = serverGrpc.addCourse(request);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

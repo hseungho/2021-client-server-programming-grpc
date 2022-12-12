@@ -1,4 +1,5 @@
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-@Data @AllArgsConstructor
+@Data @AllArgsConstructor @Builder
 public class Course implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -25,6 +26,15 @@ public class Course implements Serializable {
 			this.prerequisite.add(stringTokenizer.nextToken());
 		}
 	}
+
+    public static Course createCourse(ClientServer.Course courseDto) {
+        return Course.builder()
+                .courseId(courseDto.getId())
+                .profName(courseDto.getProfName())
+                .courseName(courseDto.getCourseName())
+                .prerequisite(courseDto.getPrerequisiteList())
+                .build();
+    }
 
     public boolean match(String courseId) {
         return this.courseId.equals(courseId);

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataGrpc implements GrpcInterface {
+
     public static DataGrpc instance;
     public static DataGrpc getInstance() {
         return instance != null ? instance : new DataGrpc();
@@ -88,22 +89,32 @@ public class DataGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.StudentIdList getStudentIdList() {
+    public ClientServer.IdList getStudentIdList() {
         System.out.println("CALLED METHOD: getStudentIdList");
-        ClientServer.StudentIdList studentIdListResponse;
-        try {
-            List<String> studentIdList = studentList.getAllStudentRecords().stream().map(Student::getStudentId).toList();
-            studentIdListResponse = ClientServer.StudentIdList.newBuilder().addAllId(studentIdList).build();
-        } catch (MyException.NullDataException e) {
-            studentIdListResponse = ClientServer.StudentIdList.newBuilder().setStatus(StringConstant.STATUS_FAILED_NO_DATA).build();
-        }
+        List<String> studentIdList = studentList.getAllStudentId();
+        ClientServer.IdList studentIdListResponse = ClientServer.IdList.newBuilder().addAllId(studentIdList).build();
         return studentIdListResponse;
+    }
+
+    @Override
+    public ClientServer.IdList getCourseIdList() {
+        System.out.println("CALLED METHOD: getCourseIdList");
+        List<String> courseIds = courseList.getAllCourseId();
+        ClientServer.IdList courseIdListResponse = ClientServer.IdList.newBuilder().addAllId(courseIds).build();
+        return courseIdListResponse;
     }
 
     @Override
     public ClientServer.Status deleteStudent(ClientServer.Id studentId) throws IOException {
         System.out.println("CALLED METHOD: deleteStudent");
         return studentList.deleteStudentRecord(studentId.getId()) ?
+                ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
+    }
+
+    @Override
+    public ClientServer.Status addCourse(ClientServer.Course course) throws IOException {
+        System.out.println("CALLED METHOD: addCourse");
+        return courseList.addCourseRecord(course) ?
                 ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
     }
 
