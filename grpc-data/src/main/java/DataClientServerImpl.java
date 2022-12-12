@@ -38,6 +38,17 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
 
+    @Override
+    public void deleteStudent(ClientServer.Id request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status responseStatus;
+        try {
+            responseStatus = dataGrpc.deleteStudent(request);
+        } catch (IOException e) {
+            responseStatus = ClientServer.Status.newBuilder().setStatus(503).build();
+        }
+        responseObserver.onNext(responseStatus);
+        responseObserver.onCompleted();
     }
 }

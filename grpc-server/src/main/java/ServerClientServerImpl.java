@@ -27,4 +27,10 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void deleteStudent(ClientServer.Id request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status response = serverGrpc.deleteStudent(request);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }
