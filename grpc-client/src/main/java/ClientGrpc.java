@@ -179,8 +179,15 @@ public class ClientGrpc {
         responseStatus(status, "ADD SUCCESS !!!");
     }
 
-    private void deleteCourse() {
-        
+    private void deleteCourse() throws IOException, MyException {
+        System.out.println("<<<<<<<<<<<<<<   Delete Course   >>>>>>>>>>>>>>");
+        System.out.print("Course ID: "); String courseId = br.readLine().trim();
+        if(courseId.isBlank()) {
+            throw new MyException.NullDataException("You have to input course id deleted.");
+        }
+        ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(courseId).build();
+        ClientServer.Status responseStatus = stub.deleteCourse(requestId);
+        responseStatus(responseStatus, "DELETE SUCCESS !!!");
     }
 
     private void registerCourse() {

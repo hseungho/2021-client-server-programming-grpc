@@ -8,4 +8,5 @@ public interface GrpcInterface {
     ClientServer.Status addStudent(ClientServer.Student student) throws IOException;
     ClientServer.Status addCourse(ClientServer.Course course) throws IOException;
     ClientServer.Status deleteStudent(ClientServer.Id studentId) throws IOException;
+    ClientServer.Status deleteCourse(ClientServer.Id courseId) throws IOException;
 }

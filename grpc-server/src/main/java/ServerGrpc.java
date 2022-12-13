@@ -70,6 +70,18 @@ public class ServerGrpc implements GrpcInterface {
     }
 
     @Override
+    public ClientServer.Status addCourse(ClientServer.Course course) {
+        System.out.println("CALLED METHOD: addCourse");
+        if(isExistCourseId(course.getId())) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage("This course id is already exists.")
+                    .build();
+        }
+        return stub.addCourse(course);
+    }
+
+    @Override
     public ClientServer.IdList getStudentIdList() {
         System.out.println("CALLED METHOD: getStudentIdList");
         return stub.getStudentIdList(Empty.newBuilder().build());
@@ -83,7 +95,7 @@ public class ServerGrpc implements GrpcInterface {
 
     @Override
     public ClientServer.Status deleteStudent(ClientServer.Id studentId) {
-        System.out.println("CALLED METHOD: deleteStudent");
+        System.out.println("CALLED METHOD: deleteStudent [ID: "+studentId.getId()+"]");
         if(!isExistStudentId(studentId.getId())) {
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
@@ -93,15 +105,14 @@ public class ServerGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.Status addCourse(ClientServer.Course course) {
-        System.out.println("CALLED METHOD: addCourse");
-        if(isExistCourseId(course.getId())) {
+    public ClientServer.Status deleteCourse(ClientServer.Id courseId) {
+        System.out.println("CALLED METHOD: deleteCourse [ID: "+courseId.getId()+"]");
+        if(!isExistCourseId(courseId.getId())) {
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
-                    .setMessage("This course id is already exists.")
-                    .build();
+                    .setMessage("This course id is not exist.").build();
         }
-        return stub.addCourse(course);
+        return stub.deleteCourse(courseId);
     }
 
     /** 학생 ID 유효성 검증 */
