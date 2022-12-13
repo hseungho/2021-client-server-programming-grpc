@@ -21,6 +21,13 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
     }
 
     @Override
+    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status response = serverGrpc.addCourse(request);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void addStudent(ClientServer.Student request, StreamObserver<ClientServer.Status> responseObserver) {
         ClientServer.Status response = serverGrpc.addStudent(request);
         responseObserver.onNext(response);
@@ -35,8 +42,8 @@ public final class ServerClientServerImpl extends ClientServerProtoGrpc.ClientSe
     }
 
     @Override
-    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
-        ClientServer.Status response = serverGrpc.addCourse(request);
+    public void deleteCourse(ClientServer.Id request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status response = serverGrpc.deleteCourse(request);
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

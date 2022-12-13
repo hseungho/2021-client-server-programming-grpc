@@ -1,4 +1,5 @@
 import com.google.protobuf.Empty;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -48,6 +49,18 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
     }
 
     @Override
+    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
+        ClientServer.Status responseStatus;
+        try {
+            responseStatus = dataGrpc.addCourse(request);
+        } catch (IOException e) {
+            responseStatus = ClientServer.Status.newBuilder().setStatus(503).build();
+        }
+        responseObserver.onNext(responseStatus);
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void deleteStudent(ClientServer.Id request, StreamObserver<ClientServer.Status> responseObserver) {
         ClientServer.Status responseStatus;
         try {
@@ -60,10 +73,10 @@ public final class DataClientServerImpl extends ClientServerProtoGrpc.ClientServ
     }
 
     @Override
-    public void addCourse(ClientServer.Course request, StreamObserver<ClientServer.Status> responseObserver) {
+    public void deleteCourse(ClientServer.Id request, StreamObserver<ClientServer.Status> responseObserver) {
         ClientServer.Status responseStatus;
         try {
-            responseStatus = dataGrpc.addCourse(request);
+            responseStatus = dataGrpc.deleteCourse(request);
         } catch (IOException e) {
             responseStatus = ClientServer.Status.newBuilder().setStatus(503).build();
         }

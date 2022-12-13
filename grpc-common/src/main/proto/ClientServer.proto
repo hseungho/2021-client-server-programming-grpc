@@ -5,11 +5,12 @@ import "google/protobuf/empty.proto";
 service ClientServerProto {
   rpc getAllStudentData(google.protobuf.Empty) returns (StudentList);
   rpc getAllCourseData(google.protobuf.Empty) returns (CourseList);
-  rpc addStudent(Student) returns (Status);
   rpc getStudentIdList(google.protobuf.Empty) returns (IdList);
+  rpc addStudent(Student) returns (Status);
   rpc deleteStudent(Id) returns (Status);
   rpc getCourseIdList(google.protobuf.Empty) returns (IdList);
   rpc addCourse(Course) returns (Status);
+  rpc deleteCourse(Id) returns (Status);
 }
 
 message Status {

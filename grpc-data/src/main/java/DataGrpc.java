@@ -82,6 +82,20 @@ public class DataGrpc implements GrpcInterface {
     }
 
     @Override
+    public ClientServer.IdList getStudentIdList() {
+        System.out.println("CALLED METHOD: getStudentIdList");
+        List<String> studentIdList = studentList.getAllStudentId();
+        return ClientServer.IdList.newBuilder().addAllId(studentIdList).build();
+    }
+
+    @Override
+    public ClientServer.IdList getCourseIdList() {
+        System.out.println("CALLED METHOD: getCourseIdList");
+        List<String> courseIds = courseList.getAllCourseId();
+        return ClientServer.IdList.newBuilder().addAllId(courseIds).build();
+    }
+
+    @Override
     public ClientServer.Status addStudent(ClientServer.Student student) throws IOException {
         System.out.println("CALLED METHOD: addStudent");
         return studentList.addStudentRecord(student) ?
@@ -89,19 +103,10 @@ public class DataGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.IdList getStudentIdList() {
-        System.out.println("CALLED METHOD: getStudentIdList");
-        List<String> studentIdList = studentList.getAllStudentId();
-        ClientServer.IdList studentIdListResponse = ClientServer.IdList.newBuilder().addAllId(studentIdList).build();
-        return studentIdListResponse;
-    }
-
-    @Override
-    public ClientServer.IdList getCourseIdList() {
-        System.out.println("CALLED METHOD: getCourseIdList");
-        List<String> courseIds = courseList.getAllCourseId();
-        ClientServer.IdList courseIdListResponse = ClientServer.IdList.newBuilder().addAllId(courseIds).build();
-        return courseIdListResponse;
+    public ClientServer.Status addCourse(ClientServer.Course course) throws IOException {
+        System.out.println("CALLED METHOD: addCourse");
+        return courseList.addCourseRecord(course) ?
+                ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
     }
 
     @Override
@@ -112,9 +117,9 @@ public class DataGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.Status addCourse(ClientServer.Course course) throws IOException {
-        System.out.println("CALLED METHOD: addCourse");
-        return courseList.addCourseRecord(course) ?
+    public ClientServer.Status deleteCourse(ClientServer.Id courseId) throws IOException {
+        System.out.println("CALLED METHOD: deleteCourse");
+        return courseList.deleteCourseRecord(courseId.getId()) ?
                 ClientServer.Status.newBuilder().setStatus(201).build() : ClientServer.Status.newBuilder().setStatus(409).build();
     }
 

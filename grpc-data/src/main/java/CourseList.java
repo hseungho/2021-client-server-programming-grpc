@@ -63,22 +63,15 @@ public class CourseList {
 		return false;
 	}
 
-	
-	public boolean deleteCourseRecord(String courseId) {
+	public boolean deleteCourseRecord(String courseId) throws IOException {
 		for(Course course : this.vCourse) {
 			if(course.match(courseId)) {
-				if(this.vCourse.remove(course)) return true;
+				if(this.vCourse.remove(course)) {
+					this.saveData();
+					return true;
+				}
 				else return false;
 			}
-		}
-		return false;
-	}
-	
-	public boolean isRegisteredCourse(String cCID) {
-		for(int i=0; i<this.vCourse.size(); i++) {
-			Course objCourse = (Course) this.vCourse.get(i);
-			if(objCourse.match(cCID))
-				return true;
 		}
 		return false;
 	}
