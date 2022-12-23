@@ -9,12 +9,11 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentVO {
+public class CourseVO {
     private Long id;
-    private String studentId;
-    private String firstName;
-    private String lastName;
-    private String department;
-    private Set<CourseVO> completedCourses;
+    private String courseId;
+    private String profName;
+    private String courseName;
+    private Set<CourseVO> prerequisite;
 
 }

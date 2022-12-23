@@ -2,21 +2,22 @@ import entity.Student;
 import vo.StudentVO;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentDtoConverter {
 
-    public static ClientServer.StudentList toProtoStudentListDto(List<Student> students) {
+    public static ClientServer.StudentList toProtoStudentList(List<Student> students) {
         ClientServer.StudentList protoStudentList;
-        List<ClientServer.Student> listProtoStudent = students.stream()
-                .map(StudentDtoConverter::toProtoStudentDto).toList();
+        List<ClientServer.Student> protoStudents = students.stream()
+                .map(StudentDtoConverter::toProtoStudent).toList();
         protoStudentList = ClientServer.StudentList.newBuilder()
                 .setStatus("SUCCESS")
-                .addAllStudent(listProtoStudent)
+                .addAllStudent(protoStudents)
                 .build();
         return protoStudentList;
     }
 
-    public static ClientServer.Student toProtoStudentDto(Student student) {
+    public static ClientServer.Student toProtoStudent(Student student) {
         return ClientServer.Student.newBuilder()
                 .setId(student.getId())
                 .setStudentId(student.getStudentId())
@@ -25,7 +26,7 @@ public class StudentDtoConverter {
                 .setDepartment(student.getDepartment())
                 .addAllCompletedCourseList(
                         student.getCompletedCourseList().stream()
-                                .map(CourseDtoConverter::toProtoCourseDto)
+                                .map(CourseDtoConverter::toProtoCourse)
                                 .toList()
                 )
                 .build();
@@ -39,7 +40,7 @@ public class StudentDtoConverter {
                 studentDto.getLastName(),
                 studentDto.getDepartment(),
                 studentDto.getCompletedCourseListList().stream()
-                        .map(CourseDtoConverter::toEntity).toList()
+                        .map(CourseDtoConverter::toVO).collect(Collectors.toSet())
         );
     }
 

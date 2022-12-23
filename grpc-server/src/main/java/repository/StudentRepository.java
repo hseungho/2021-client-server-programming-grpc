@@ -12,7 +12,11 @@ public class StudentRepository extends Repository<Student, Long> {
     }
 
     public Optional<Student> findByStudentId(String studentId) {
-        return super.findByStringField("studentId", studentId);
+        return super.findByStringCondition("studentId", studentId);
+    }
+
+    public void deleteByStudentId(String studentId) {
+        super.deleteByStringCondition("studentId", studentId);
     }
 
 }

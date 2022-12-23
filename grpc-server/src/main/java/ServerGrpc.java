@@ -1,11 +1,14 @@
+import applicationservice.CourseService;
 import applicationservice.StudentService;
 import com.google.protobuf.Empty;
+import entity.Course;
 import entity.Student;
 import exception.MyException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
+import vo.CourseVO;
 import vo.StudentVO;
 
 import java.io.IOException;
@@ -24,6 +27,7 @@ public class ServerGrpc implements GrpcInterface {
     private ManagedChannel channel;
     private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
     private StudentService studentService;
+    private CourseService courseService;
 
     public ServerGrpc() {
         init();
@@ -55,13 +59,14 @@ public class ServerGrpc implements GrpcInterface {
     public ClientServer.StudentList getAllStudentList() {
         System.out.println("LOG: getAllStudentList");
         List<Student> students = studentService.getAllStudentList();
-        return StudentDtoConverter.toProtoStudentListDto(students);
+        return StudentDtoConverter.toProtoStudentList(students);
     }
 
     @Override
     public ClientServer.CourseList getAllCourseList() {
         System.out.println("CALLED METHOD: getAllCourseList");
-        return stub.getAllCourseData(Empty.newBuilder().build());
+        List<Course> courses = courseService.getAllCourseList();
+        return CourseDtoConverter.toProtoCourseList(courses);
     }
 
     @Override
@@ -71,7 +76,7 @@ public class ServerGrpc implements GrpcInterface {
         try {
             studentService.addStudent(studentVo);
         } catch (MyException.DuplicationDataException e) {
-            System.err.printf("LOG: create duplicate student, request id: %s", studentDto.getStudentId());
+            System.err.printf("LOG: create duplicate student, request id: %s", studentVo.getStudentId());
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
                     .setMessage(e.getMessage())
@@ -81,15 +86,19 @@ public class ServerGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.Status addCourse(ClientServer.Course course) {
+    public ClientServer.Status addCourse(ClientServer.Course courseDto) {
         System.out.println("CALLED METHOD: addCourse");
-//        if(isExistCourseId(course.getId())) {
-//            return ClientServer.Status.newBuilder()
-//                    .setStatus(409)
-//                    .setMessage("This course id is already exists.")
-//                    .build();
-//        }
-        return stub.addCourse(course);
+        CourseVO courseVO = CourseDtoConverter.toVO(courseDto);
+        try {
+            courseService.addCourse(courseVO);
+        } catch (MyException.DuplicationDataException e) {
+            System.err.printf("LOG: create duplicate course, request id: %s", courseVO.getCourseId());
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage(e.getMessage())
+                    .build();
+        }
+        return ClientServer.Status.newBuilder().setStatus(201).build();
     }
 
     @Override

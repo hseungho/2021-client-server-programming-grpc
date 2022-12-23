@@ -2,7 +2,6 @@ import applicationservice.StudentService;
 import entity.Student;
 import exception.MyException;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import repository.CourseRepository;
 import vo.StudentVO;
@@ -10,8 +9,10 @@ import vo.StudentVO;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StudentServiceTest {
 
@@ -23,16 +24,14 @@ class StudentServiceTest {
     }
 
     @Test
-    @DisplayName("test of find all list from database")
-    void findAll() {
+    void 학생데이터_전체조회() {
         List<Student> studentList = studentService.getAllStudentList();
 //        System.out.println(students);
         assertEquals("20100123", studentList.get(0).getStudentId());
     }
 
     @Test
-    @DisplayName("find student by id test")
-    public void findStudentById() {
+    public void 학생데이터_ID_조회() {
         Student student_1 = new Student();
         student_1.setStudentId("20100123");
         student_1.setFirstName("Hwang");
@@ -49,8 +48,7 @@ class StudentServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("check persistence of hibernate")
-    public void updateStudentForCheckPersistence() {
+    public void 영속성_체크를_위한_학생_이름_변경_및_확인() {
         Student student_1 = studentService.getStudentById(1L);
         student_1.setLastName("Update_test");
 
@@ -59,17 +57,14 @@ class StudentServiceTest {
     }
 
     @Test
-    @DisplayName("test of find student by student id")
-    public void findStudentByStudentId() {
-        Student student;
-        student = studentService.getStudentByStudentId("20100123");
+    public void 학생데이터_학생_ID_조회() {
+        Student student = studentService.getStudentByStudentId("20100123");
         assertEquals("20100123", student.getStudentId());
     }
 
     @Test
     @Transactional
-    @DisplayName("test of create student")
-    void create() {
+    void 학생데이터_추가() {
         // case success
         StudentVO student_1 = new StudentVO();
         student_1.setStudentId("20221222");
@@ -82,7 +77,8 @@ class StudentServiceTest {
         student_1.setCompletedCourses(courseIds.stream()
                 .map(courseRepository::findByCourseId)
                 .map(Optional::orElseThrow)
-                .toList());
+                .map(CourseDtoConverter::toVO)
+                .collect(Collectors.toSet()));
         try {
             studentService.addStudent(student_1);
         } catch (MyException.DuplicationDataException e) {
@@ -90,9 +86,31 @@ class StudentServiceTest {
         }
         Student student_2 = studentService.getStudentByStudentId("20221222");
         assertEquals(student_1.getStudentId(), student_2.getStudentId());
+
+        studentService.delete(student_2.getStudentId()); // rollback
     }
 
     @Test
-    void delete() {
+    void 학생데이터_삭제() {
+        List<Student> students = studentService.getAllStudentList();
+        Student del_student = students.get(students.size()-1); // delete student
+        Student rb_student = Student.newInstance(del_student); // copy student for rollback
+
+        studentService.delete(del_student.getStudentId());
+        studentService.addStudent(rb_student);
+
+        // 없는 아이디 삭제 요청
+        String studentId_2 = "2000000";
+        assertThrows(MyException.InvalidedDataException.class, () -> {
+            studentService.delete(studentId_2);
+        });
+    }
+
+    @Test
+    void EM_캐시_데이터_조회_여부_확인() {
+        Student student_1 = studentService.getStudentById(1L);
+        Student student_2 = studentService.getStudentById(1L);
+
+        assertEquals(student_1.getId(), student_2.getId());
     }
 }
