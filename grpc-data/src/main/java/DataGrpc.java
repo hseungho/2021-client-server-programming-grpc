@@ -39,10 +39,10 @@ public class DataGrpc implements GrpcInterface {
             List<ClientServer.Student> responseList = new ArrayList<>();
             for(Student student : studentList.getAllStudentRecords()) {
                 ClientServer.Student responseStudent = ClientServer.Student.newBuilder()
-                        .setId(student.getStudentId())
-                        .setName(student.getName())
-                        .setDepartment(student.getDepartment())
-                        .addAllCompletedCourseList(new ArrayList<>(student.getCompletedCourseList()))
+//                        .setId(student.getStudentId())
+////                        .setName(student.getName())
+//                        .setDepartment(student.getDepartment())
+//                        .addAllCompletedCourseList(new ArrayList<>(student.getCompletedCourseList()))
                         .build();
                 responseList.add(responseStudent);
             }
@@ -66,10 +66,11 @@ public class DataGrpc implements GrpcInterface {
             List<ClientServer.Course> responseList = new ArrayList<>();
             for(Course course : courseList.getAllCourseRecords()) {
                 ClientServer.Course responseCourse = ClientServer.Course.newBuilder()
-                        .setId(course.getCourseId())
-                        .setProfName(course.getProfName())
-                        .setCourseName(course.getCourseName())
-                        .addAllPrerequisite(new ArrayList<>(course.getPrerequisite())).build();
+//                        .setId(course.getCourseId())
+//                        .setProfName(course.getProfName())
+//                        .setCourseName(course.getCourseName())
+//                        .addAllPrerequisite(new ArrayList<>(course.getPrerequisite()))
+                        .build();
                 responseList.add(responseCourse);
             }
             courseListResponse = ClientServer.CourseList.newBuilder()

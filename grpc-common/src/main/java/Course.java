@@ -28,12 +28,13 @@ public class Course implements Serializable {
 	}
 
     public static Course createCourse(ClientServer.Course courseDto) {
-        return Course.builder()
-                .courseId(courseDto.getId())
-                .profName(courseDto.getProfName())
-                .courseName(courseDto.getCourseName())
-                .prerequisite(courseDto.getPrerequisiteList())
-                .build();
+        return null;
+//        return Course.builder()
+//                .courseId(courseDto.getId())
+//                .profName(courseDto.getProfName())
+//                .courseName(courseDto.getCourseName())
+//                .prerequisite(courseDto.getPrerequisiteList())
+//                .build();
     }
 
     public boolean match(String courseId) {
@@ -50,12 +51,13 @@ public class Course implements Serializable {
     }
 
     public static Course toEntity(ClientServer.Course dto) {
-        return new Course(
-                dto.getId(),
-                dto.getProfName(),
-                dto.getCourseName(),
-                new ArrayList<>(dto.getPrerequisiteList())
-        );
+        return null;
+//        return new Course(
+//                dto.getId(),
+//                dto.getProfName(),
+//                dto.getCourseName(),
+//                new ArrayList<>(dto.getPrerequisiteList())
+//        );
     }
 
 	

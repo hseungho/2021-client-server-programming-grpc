@@ -1,14 +1,18 @@
 package repository;
 
-import config.HibernateConfig;
+import config.Repository;
 import entity.Student;
 
-public class StudentRepository {
+import java.util.Optional;
 
-    private HibernateConfig hibernate = HibernateConfig.getInstance();
+public class StudentRepository extends Repository<Student, Long> {
 
-    public Student findById(Long id) {
-        return hibernate.findById(Student.class, id);
+    public StudentRepository() {
+        super(Student.class);
+    }
+
+    public Optional<Student> findByStudentId(String studentId) {
+        return super.findByStringField("studentId", studentId);
     }
 
 }

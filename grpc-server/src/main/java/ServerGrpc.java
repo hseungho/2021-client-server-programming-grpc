@@ -1,8 +1,12 @@
+import applicationservice.StudentService;
 import com.google.protobuf.Empty;
+import entity.Student;
+import exception.MyException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
+import vo.StudentVO;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,6 +23,7 @@ public class ServerGrpc implements GrpcInterface {
     private Server server;
     private ManagedChannel channel;
     private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
+    private StudentService studentService;
 
     public ServerGrpc() {
         init();
@@ -27,6 +32,7 @@ public class ServerGrpc implements GrpcInterface {
     private void init() {
         initChannel();
         initStub();
+        studentService = new StudentService();
     }
 
     private void initChannel() {
@@ -47,8 +53,9 @@ public class ServerGrpc implements GrpcInterface {
 
     @Override
     public ClientServer.StudentList getAllStudentList() {
-        System.out.println("CALLED METHOD: getAllStudentList");
-        return stub.getAllStudentData(Empty.newBuilder().build());
+        System.out.println("LOG: getAllStudentList");
+        List<Student> students = studentService.getAllStudentList();
+        return StudentDtoConverter.toProtoStudentListDto(students);
     }
 
     @Override
@@ -58,26 +65,30 @@ public class ServerGrpc implements GrpcInterface {
     }
 
     @Override
-    public ClientServer.Status addStudent(ClientServer.Student student) {
+    public ClientServer.Status addStudent(ClientServer.Student studentDto) {
         System.out.println("CALLED METHOD: addStudent");
-        if(isExistStudentId(student.getId())) {
+        StudentVO studentVo = StudentDtoConverter.toVO(studentDto);
+        try {
+            studentService.addStudent(studentVo);
+        } catch (MyException.DuplicationDataException e) {
+            System.err.printf("LOG: create duplicate student, request id: %s", studentDto.getStudentId());
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
-                    .setMessage("This student id is already exists.")
+                    .setMessage(e.getMessage())
                     .build();
         }
-        return stub.addStudent(student);
+        return ClientServer.Status.newBuilder().setStatus(201).build();
     }
 
     @Override
     public ClientServer.Status addCourse(ClientServer.Course course) {
         System.out.println("CALLED METHOD: addCourse");
-        if(isExistCourseId(course.getId())) {
-            return ClientServer.Status.newBuilder()
-                    .setStatus(409)
-                    .setMessage("This course id is already exists.")
-                    .build();
-        }
+//        if(isExistCourseId(course.getId())) {
+//            return ClientServer.Status.newBuilder()
+//                    .setStatus(409)
+//                    .setMessage("This course id is already exists.")
+//                    .build();
+//        }
         return stub.addCourse(course);
     }
 
