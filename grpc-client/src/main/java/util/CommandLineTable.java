@@ -21,7 +21,7 @@ public class CommandLineTable {
         this.rightAlign = rightAlign;
     }
 
-    private void setShowVerticalLines(boolean showVerticalLines) {
+    public void setShowVerticalLines(boolean showVerticalLines) {
         verticalSep = showVerticalLines ? "|" : "";
         joinSep = showVerticalLines ? "+" : " ";
     }
@@ -78,7 +78,7 @@ public class CommandLineTable {
             if(rightAlign) {
                 System.out.printf("%s %" +maxWidths[i]+ "s %s", verticalSep, s, verStrTemp);
             } else {
-                System.out.printf("$s %-" + maxWidths[i]+ "s %s", verticalSep, s, verStrTemp);
+                System.out.printf("%s %-" + maxWidths[i]+ "s %s", verticalSep, s, verStrTemp);
             }
         }
         System.out.println();

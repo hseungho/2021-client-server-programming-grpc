@@ -49,7 +49,12 @@ public class ClientGrpc {
 
     private void initTable() {
         studentTable = new CommandLineTable();
+        studentTable.setShowVerticalLines(true);
+        studentTable.setHeaders("Student ID", "First Name", "Last Name" ,"Department", "Completed Course ID");
 
+        courseTable = new CommandLineTable();
+        courseTable.setShowVerticalLines(true);
+        courseTable.setHeaders("Course ID", "Prof. Name", "Course Name", "Prerequisite ID");
     }
 
     public void start() throws IOException {
@@ -111,8 +116,14 @@ public class ClientGrpc {
         List<StudentDto> studentDtos = studentList.stream().map(student -> new StudentDto(
                 student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getLastName(),
                 student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())).toList();
-
-
+        studentDtos.forEach(studentDto -> {
+            StringBuilder completedCourseId = new StringBuilder();
+            studentDto.getCompletedCourseIds().forEach(s -> completedCourseId.append(s).append(" "));
+            studentTable.addRow(
+                    studentDto.getStudentId(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getDepartment(),
+                    completedCourseId.toString());
+        });
+        studentTable.print();
     }
 
     private void showCourseList() {
