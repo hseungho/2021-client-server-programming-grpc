@@ -87,7 +87,7 @@ class StudentServiceTest {
         Student student_2 = studentService.getStudentByStudentId("20221222");
         assertEquals(student_1.getStudentId(), student_2.getStudentId());
 
-        studentService.delete(student_2.getStudentId()); // rollback
+        studentService.deleteStudent(student_2.getStudentId()); // rollback
     }
 
     @Test
@@ -96,13 +96,13 @@ class StudentServiceTest {
         Student del_student = students.get(students.size()-1); // delete student
         Student rb_student = Student.newInstance(del_student); // copy student for rollback
 
-        studentService.delete(del_student.getStudentId());
+        studentService.deleteStudent(del_student.getStudentId());
         studentService.addStudent(rb_student);
 
         // 없는 아이디 삭제 요청
         String studentId_2 = "2000000";
         assertThrows(MyException.InvalidedDataException.class, () -> {
-            studentService.delete(studentId_2);
+            studentService.deleteStudent(studentId_2);
         });
     }
 

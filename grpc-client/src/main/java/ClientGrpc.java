@@ -1,13 +1,15 @@
 import com.google.protobuf.Empty;
+import dto.StudentDto;
+import exception.MyException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import util.CommandLineTable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Scanner;
 
 public class ClientGrpc {
 
@@ -20,6 +22,8 @@ public class ClientGrpc {
     private ManagedChannel channel;
     private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
     private boolean isRunning;
+    private CommandLineTable studentTable;
+    private CommandLineTable courseTable;
 
     public ClientGrpc() {
         br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,6 +33,7 @@ public class ClientGrpc {
     private void init() {
         initChannel();
         initStub();
+        initTable();
     }
 
     private void initChannel() {
@@ -40,6 +45,11 @@ public class ClientGrpc {
 
     private void initStub() {
         stub = ClientServerProtoGrpc.newBlockingStub(channel);
+    }
+
+    private void initTable() {
+        studentTable = new CommandLineTable();
+
     }
 
     public void start() throws IOException {
@@ -77,7 +87,7 @@ public class ClientGrpc {
                     case "7" -> registerCourse();
                     case "8" -> showRegister();
                     case "x" -> isRunning = false;
-                    default -> System.out.println("Incorrect Menu !!");
+                    default -> System.err.println("Incorrect Menu !!");
                 }
             } catch (MyException e) {
                 System.err.println(e.getMessage());
@@ -98,12 +108,11 @@ public class ClientGrpc {
 
     private void printStudent(List<ClientServer.Student> studentList) {
         System.out.println("<<<<<<<<<<<<<<   Student List   >>>>>>>>>>>>>>");
-        StringBuilder result = new StringBuilder();
-        for(ClientServer.Student student_proto : studentList) {
-            Student student = Student.toEntity(student_proto);
-            result.append(student).append("\n");
-        }
-        System.out.println(result);
+        List<StudentDto> studentDtos = studentList.stream().map(student -> new StudentDto(
+                student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getLastName(),
+                student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())).toList();
+
+
     }
 
     private void showCourseList() {
@@ -117,29 +126,28 @@ public class ClientGrpc {
 
     private void printCourse(List<ClientServer.Course> courseList) {
         System.out.println("<<<<<<<<<<<<<<   Course List   >>>>>>>>>>>>>>");
-        StringBuilder result = new StringBuilder();
-        for(ClientServer.Course course_proto : courseList) {
-            Course course = Course.toEntity(course_proto);
-            result.append(course).append("\n");
-        }
-        System.out.println(result);
+        // TODO
     }
 
     private void addStudent() throws IOException, MyException {
         System.out.println("<<<<<<<<<<<<<<   Add Student   >>>>>>>>>>>>>>");
         System.out.println("------Student Information------");
         System.out.print("Student ID: "); String studentId = br.readLine().trim();
-        System.out.print("Student Name: "); String studentName = br.readLine().trim();
+        System.out.print("Student First Name: "); String studentFirstName = br.readLine().trim();
+        System.out.print("Student Last Name: "); String studentLastName = br.readLine().trim();
         System.out.print("Student Department: "); String studentDept = br.readLine().trim();
         System.out.print("Student Completed Course List: "); String completedCourse = br.readLine().trim();
-        if(studentId.isBlank() || studentName.isBlank() || studentDept.isBlank()) {
+        if(studentId.isBlank() || studentFirstName.isBlank() || studentLastName.isBlank() || studentDept.isBlank()) {
             throw new MyException.NullDataException("You have to input every student information.");
         }
-        List<String> completedCourseList = List.of(completedCourse.split(" "));
+        List<String> strCompletedCourseList = List.of(completedCourse.split(" "));
+        List<ClientServer.Course> completedCourseList = strCompletedCourseList.stream().map(courseId ->
+                ClientServer.Course.newBuilder().setCourseId(courseId).build()).toList();
 
         ClientServer.Student student = ClientServer.Student.newBuilder()
-                .setId(studentId)
-                .setName(studentName)
+                .setStudentId(studentId)
+                .setFirstName(studentFirstName)
+                .setLastName(studentLastName)
                 .setDepartment(studentDept)
                 .addAllCompletedCourseList(completedCourseList)
                 .build();
@@ -168,10 +176,12 @@ public class ClientGrpc {
         if(courseId.isBlank() || profName.isBlank() || courseName.isBlank()) {
             throw new MyException.NullDataException("You have to input every course information.");
         }
-        List<String> prerequisiteList = List.of(prerequisite.split(" "));
+        List<String> strPrerequisiteList = List.of(prerequisite.split(" "));
+        List<ClientServer.Course> prerequisiteList = strPrerequisiteList.stream().map(preCourseId ->
+                ClientServer.Course.newBuilder().setCourseId(preCourseId).build()).toList();
 
         ClientServer.Course course = ClientServer.Course.newBuilder()
-                .setId(courseId)
+                .setCourseId(courseId)
                 .setProfName(profName)
                 .setCourseName(courseName)
                 .addAllPrerequisite(prerequisiteList).build();

@@ -19,15 +19,23 @@ public class CourseService {
     }
 
     public void addCourse(CourseVO courseVO) throws MyException.DuplicationDataException{
-        try {
-            courseRepository.findByCourseId(courseVO.getCourseId())
-                    .ifPresent(c -> {
-                        throw new RuntimeException();
-                    });
-        } catch (RuntimeException e) {
-            throw new MyException.DuplicationDataException("This course id is duplicated");
-        }
         Course course = Course.createEntity(courseVO);
+        addCourse(course);
+    }
+
+    public void addCourse(Course course) {
+        courseRepository.findByCourseId(course.getCourseId()).stream().findAny()
+                .ifPresent(c -> {
+                    throw new MyException.DuplicationDataException("This course id is duplicated");
+                });
         courseRepository.save(course);
     }
+
+    public void deleteCourse(String courseId) {
+        if(courseRepository.findByCourseId(courseId).isEmpty()) {
+            throw new MyException.InvalidedDataException("This course id doesn't exist");
+        }
+        courseRepository.deleteByCourseId(courseId);
+    }
+
 }

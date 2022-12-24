@@ -1,4 +1,6 @@
-public class MyException extends Exception {
+package exception;
+
+public class MyException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	public MyException(String errorMessage) {
 		super(errorMessage);

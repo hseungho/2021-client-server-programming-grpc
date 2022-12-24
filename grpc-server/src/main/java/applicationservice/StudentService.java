@@ -42,7 +42,7 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public void delete(String studentId) {
+    public void deleteStudent(String studentId) {
         if(studentRepository.findByStudentId(studentId).isEmpty()) {
             throw new MyException.InvalidedDataException("This student id doesn't exist");
         }

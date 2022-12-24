@@ -1,6 +1,5 @@
 import applicationservice.CourseService;
 import applicationservice.StudentService;
-import com.google.protobuf.Empty;
 import entity.Course;
 import entity.Student;
 import exception.MyException;
@@ -13,10 +12,9 @@ import vo.StudentVO;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ServerGrpc implements GrpcInterface {
+public class ServerGrpc {
 
     public static ServerGrpc instance;
     public static ServerGrpc getInstance() {
@@ -55,21 +53,18 @@ public class ServerGrpc implements GrpcInterface {
         this.startServer();
     }
 
-    @Override
     public ClientServer.StudentList getAllStudentList() {
         System.out.println("LOG: getAllStudentList");
         List<Student> students = studentService.getAllStudentList();
         return StudentDtoConverter.toProtoStudentList(students);
     }
 
-    @Override
     public ClientServer.CourseList getAllCourseList() {
         System.out.println("CALLED METHOD: getAllCourseList");
         List<Course> courses = courseService.getAllCourseList();
         return CourseDtoConverter.toProtoCourseList(courses);
     }
 
-    @Override
     public ClientServer.Status addStudent(ClientServer.Student studentDto) {
         System.out.println("CALLED METHOD: addStudent");
         StudentVO studentVo = StudentDtoConverter.toVO(studentDto);
@@ -85,7 +80,6 @@ public class ServerGrpc implements GrpcInterface {
         return ClientServer.Status.newBuilder().setStatus(201).build();
     }
 
-    @Override
     public ClientServer.Status addCourse(ClientServer.Course courseDto) {
         System.out.println("CALLED METHOD: addCourse");
         CourseVO courseVO = CourseDtoConverter.toVO(courseDto);
@@ -101,51 +95,30 @@ public class ServerGrpc implements GrpcInterface {
         return ClientServer.Status.newBuilder().setStatus(201).build();
     }
 
-    @Override
-    public ClientServer.IdList getStudentIdList() {
-        System.out.println("CALLED METHOD: getStudentIdList");
-        return stub.getStudentIdList(Empty.newBuilder().build());
-    }
-
-    @Override
-    public ClientServer.IdList getCourseIdList() {
-        System.out.println("CALLED METHOD: getCourseIdList");
-        return stub.getCourseIdList(Empty.newBuilder().build());
-    }
-
-    @Override
     public ClientServer.Status deleteStudent(ClientServer.Id studentId) {
         System.out.println("CALLED METHOD: deleteStudent [ID: "+studentId.getId()+"]");
-        if(!isExistStudentId(studentId.getId())) {
+        try {
+            studentService.deleteStudent(studentId.getId());
+        } catch (MyException.InvalidedDataException e) {
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
-                    .setMessage("This student id is not exist.").build();
+                    .setMessage(e.getMessage())
+                    .build();
         }
-        return stub.deleteStudent(studentId);
+        return ClientServer.Status.newBuilder().setStatus(200).build();
     }
 
-    @Override
     public ClientServer.Status deleteCourse(ClientServer.Id courseId) {
         System.out.println("CALLED METHOD: deleteCourse [ID: "+courseId.getId()+"]");
-        if(!isExistCourseId(courseId.getId())) {
+        try {
+            courseService.deleteCourse(courseId.getId());
+        } catch (MyException.InvalidedDataException e) {
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
-                    .setMessage("This course id is not exist.").build();
+                    .setMessage(e.getMessage())
+                    .build();
         }
-        return stub.deleteCourse(courseId);
-    }
-
-    /** 학생 ID 유효성 검증 */
-    private boolean isExistStudentId(String id) {
-        ClientServer.IdList studentIdList = getStudentIdList();
-        List<String> studentIds = new ArrayList<>(studentIdList.getIdList());
-        return studentIds.contains(id);
-    }
-
-    private boolean isExistCourseId(String id) {
-        ClientServer.IdList courseIdList = getCourseIdList();
-        List<String> courseIds = new ArrayList<>(courseIdList.getIdList());
-        return courseIds.contains(id);
+        return ClientServer.Status.newBuilder().setStatus(200).build();
     }
 
     private void startServer() {
