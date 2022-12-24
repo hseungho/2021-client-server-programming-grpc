@@ -34,6 +34,10 @@ public class CommandLineTable {
         rows.add(cells);
     }
 
+    public void resetRows() {
+        rows.clear();
+    }
+
     public void print() {
         int[] maxWidths = headers != null ?
                 Arrays.stream(headers).mapToInt(String::length).toArray() : null;

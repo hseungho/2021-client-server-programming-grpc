@@ -1,4 +1,5 @@
 import com.google.protobuf.Empty;
+import dto.CourseDto;
 import dto.StudentDto;
 import exception.MyException;
 import io.grpc.ManagedChannel;
@@ -112,10 +113,11 @@ public class ClientGrpc {
     }
 
     private void printStudent(List<ClientServer.Student> studentList) {
-        System.out.println("<<<<<<<<<<<<<<   Student List   >>>>>>>>>>>>>>");
+        studentTable.resetRows();
         List<StudentDto> studentDtos = studentList.stream().map(student -> new StudentDto(
                 student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getLastName(),
-                student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())).toList();
+                student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())
+        ).toList();
         studentDtos.forEach(studentDto -> {
             StringBuilder completedCourseId = new StringBuilder();
             studentDto.getCompletedCourseIds().forEach(s -> completedCourseId.append(s).append(" "));
@@ -136,13 +138,24 @@ public class ClientGrpc {
     }
 
     private void printCourse(List<ClientServer.Course> courseList) {
-        System.out.println("<<<<<<<<<<<<<<   Course List   >>>>>>>>>>>>>>");
-        // TODO
+        courseTable.resetRows();
+        List<CourseDto> courseDtos = courseList.stream().map(course -> new CourseDto(
+                course.getId(), course.getCourseId(), course.getProfName(), course.getCourseName(),
+                course.getPrerequisiteList().stream().map(ClientServer.Course::getCourseId).toList()
+        )).toList();
+        courseDtos.forEach(courseDto -> {
+            StringBuilder prerequisiteId = new StringBuilder();
+            courseDto.getPrerequisiteIds().forEach(c -> prerequisiteId.append(c).append(" "));
+            courseTable.addRow(
+                    courseDto.getCourseId(), courseDto.getProfName(), courseDto.getCourseName(),
+                    prerequisiteId.toString()
+            );
+        });
+        courseTable.print();
     }
 
     private void addStudent() throws IOException, MyException {
         System.out.println("<<<<<<<<<<<<<<   Add Student   >>>>>>>>>>>>>>");
-        System.out.println("------Student Information------");
         System.out.print("Student ID: "); String studentId = br.readLine().trim();
         System.out.print("Student First Name: "); String studentFirstName = br.readLine().trim();
         System.out.print("Student Last Name: "); String studentLastName = br.readLine().trim();
@@ -179,7 +192,6 @@ public class ClientGrpc {
 
     private void addCourse() throws IOException, MyException {
         System.out.println("<<<<<<<<<<<<<<   Add Course   >>>>>>>>>>>>>>");
-        System.out.println("------Course Information------");
         System.out.print("Course ID: "); String courseId = br.readLine().trim();
         System.out.print("Prof Name: "); String profName = br.readLine().trim();
         System.out.print("Course Name: "); String courseName = br.readLine().trim();
@@ -220,7 +232,7 @@ public class ClientGrpc {
     }
 
     private void responseStatus(ClientServer.Status status, String successMessage) throws MyException{
-        if(status.getStatus() == 201) {
+        if(status.getStatus() == 201 || status.getStatus() == 200) {
             System.out.println(successMessage);
         } else if(status.getStatus() == 409) {
             throw new MyException.DuplicationDataException(status.getMessage());

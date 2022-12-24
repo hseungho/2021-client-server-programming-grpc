@@ -4,6 +4,7 @@ import exception.MyException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import repository.CourseRepository;
+import repository.StudentRepository;
 import vo.StudentVO;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,9 @@ class StudentServiceTest {
 
     @BeforeAll
     public static void init() {
-        studentService = new StudentService();
+        StudentRepository studentRepository = new StudentRepository();
+        CourseRepository courseRepository = new CourseRepository();
+        studentService = new StudentService(studentRepository, courseRepository);
     }
 
     @Test

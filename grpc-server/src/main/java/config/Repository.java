@@ -80,7 +80,7 @@ public class Repository<T, ID> {
         return entity;
     }
 
-    public void delete(T entity) {
+    public void delete(T entity) throws MyException.NullDataException {
         if(entity == null) {
             throw new MyException.NullDataException("cannot delete this entity doesn't exist.");
         }

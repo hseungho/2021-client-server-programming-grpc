@@ -25,6 +25,7 @@ public class Course {
     @Column(name = "course_name")
     private String courseName;
 
+    // TODO OneToMany -> ManyToMany -> Entity 승격?
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "prerequisite",

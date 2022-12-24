@@ -1,18 +1,25 @@
 package applicationservice;
 
+import entity.Course;
 import entity.Student;
 import exception.MyException;
+import exception.NotFoundCourseIdException;
+import repository.CourseRepository;
 import repository.StudentRepository;
 import vo.StudentVO;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
 
-    public StudentService() {
-        this.studentRepository = new StudentRepository();
+    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository) {
+        this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
     }
 
     public List<Student> getAllStudentList() {
@@ -39,14 +46,21 @@ public class StudentService {
                 .ifPresent(s -> {
                     throw new MyException.DuplicationDataException("This student id is duplicated");
                 });
+        Set<Course> completedCourses = student.getCompletedCourseList().stream().map(course ->
+                courseRepository.findByCourseId(course.getCourseId())
+                        .orElseThrow(NotFoundCourseIdException::new)
+        ).collect(Collectors.toSet());
+        student.setCompletedCourseList(completedCourses);
         studentRepository.save(student);
     }
 
     public void deleteStudent(String studentId) {
-        if(studentRepository.findByStudentId(studentId).isEmpty()) {
+        try {
+            studentRepository.deleteByStudentId(studentId);
+        } catch (MyException.NullDataException e) {
+            System.err.println("LOG: "+e.getMessage());
             throw new MyException.InvalidedDataException("This student id doesn't exist");
         }
-        studentRepository.deleteByStudentId(studentId);
     }
 
 

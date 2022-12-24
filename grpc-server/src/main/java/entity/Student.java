@@ -25,7 +25,9 @@ public class Student {
     @Column(name = "last_name")
     private String lastName;
     private String department;
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+
+    // TODO Entity 승격?
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "student_course",
             joinColumns = @JoinColumn(name = "s_id"),
