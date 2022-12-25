@@ -27,6 +27,9 @@ repositories {
 dependencies {
     implementation project(path: ":grpc-common", configuration:"default")
 
+    // lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }

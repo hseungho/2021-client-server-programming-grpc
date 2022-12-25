@@ -5,10 +5,8 @@ import "google/protobuf/empty.proto";
 service ClientServerProto {
   rpc getAllStudentData(google.protobuf.Empty) returns (StudentList);
   rpc getAllCourseData(google.protobuf.Empty) returns (CourseList);
-  rpc getStudentIdList(google.protobuf.Empty) returns (IdList);
   rpc addStudent(Student) returns (Status);
   rpc deleteStudent(Id) returns (Status);
-  rpc getCourseIdList(google.protobuf.Empty) returns (IdList);
   rpc addCourse(Course) returns (Status);
   rpc deleteCourse(Id) returns (Status);
 }
@@ -23,10 +21,12 @@ message Id {
 }
 
 message Student {
-  string id = 1;
-  string name = 2;
-  string department = 3;
-  repeated string completedCourseList = 4;
+  int64 id = 1;
+  string student_id = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string department = 5;
+  repeated Course completedCourseList = 6;
 }
 
 message StudentList {
@@ -34,16 +34,12 @@ message StudentList {
   repeated Student student = 2;
 }
 
-message IdList {
-  string status = 1;
-  repeated string id = 2;
-}
-
 message Course {
-  string id = 1;
-  string profName = 2;
-  string courseName = 3;
-  repeated string prerequisite = 4;
+  int64 id = 1;
+  string course_id = 2;
+  string profName = 3;
+  string courseName = 4;
+  repeated Course prerequisite = 5;
 }
 
 message CourseList {
