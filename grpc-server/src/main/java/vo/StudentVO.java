@@ -1,13 +1,11 @@
 package vo;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class StudentVO {
     private Long id;
