@@ -5,6 +5,7 @@ import entity.Course;
 import entity.Student;
 import exception.MyException;
 import exception.NotFoundCourseIdException;
+import exception.NotFoundStudentIdException;
 import repository.CourseRepository;
 import repository.StudentRepository;
 
@@ -28,12 +29,12 @@ public class StudentService {
 
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new MyException.NullDataException("Not exist student for this id"));
+                .orElseThrow(NotFoundStudentIdException::new);
     }
 
     public Student getStudentByStudentId(String studentId) {
         return studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new MyException.NullDataException("Not exist student for this student id"));
+                .orElseThrow(NotFoundStudentIdException::new);
     }
 
     public void addStudent(StudentCreateRequest studentCreateRequest) {
@@ -66,13 +67,15 @@ public class StudentService {
             studentRepository.deleteByStudentId(studentId);
         } catch (MyException.NullDataException e) {
             System.err.println("LOG: "+e.getMessage());
-            throw new MyException.InvalidedDataException("This student id doesn't exist");
+            throw new NotFoundStudentIdException();
         }
     }
 
 
     public void register(String studentId, String courseId) {
         Student student = getStudentByStudentId(studentId);
+        Course course = courseRepository.findByCourseId(courseId)
+                .orElseThrow(NotFoundCourseIdException::new);
 
     }
 }
