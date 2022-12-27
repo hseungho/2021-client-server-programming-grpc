@@ -1,4 +1,5 @@
 import applicationservice.CourseService;
+import applicationservice.RegisterService;
 import applicationservice.StudentService;
 import dto.request.CourseCreateRequest;
 import dto.request.StudentCreateRequest;
@@ -29,6 +30,7 @@ public class ServerGrpc {
     private ClientServerProtoGrpc.ClientServerProtoBlockingStub stub;
     private StudentService studentService;
     private CourseService courseService;
+    private RegisterService registerService;
 
     public ServerGrpc() {
         init();
@@ -55,7 +57,8 @@ public class ServerGrpc {
         StudentRepository studentRepository = new StudentRepository();
         CourseRepository courseRepository = new CourseRepository();
         studentService = new StudentService(studentRepository, courseRepository);
-        courseService = new CourseService();
+        courseService = new CourseService(courseRepository);
+        registerService = new RegisterService(studentRepository, courseRepository);
     }
 
     public void start() {
@@ -139,7 +142,14 @@ public class ServerGrpc {
 
     public ClientServer.Status register(ClientServer.Register registerDto) {
         info(String.format("register [S_ID: %s, C_ID: %s", registerDto.getStudentId(), registerDto.getCourseId()));
-        studentService.register(registerDto.getStudentId(), registerDto.getCourseId());
+        try {
+            registerService.register(registerDto.getStudentId(), registerDto.getCourseId());
+        } catch (MyException e) {
+            return ClientServer.Status.newBuilder()
+                    .setStatus(409)
+                    .setMessage(e.getMessage())
+                    .build();
+        }
         return ClientServer.Status.newBuilder().setStatus(200).build();
     }
 

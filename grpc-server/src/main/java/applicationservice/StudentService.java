@@ -71,11 +71,4 @@ public class StudentService {
         }
     }
 
-
-    public void register(String studentId, String courseId) {
-        Student student = getStudentByStudentId(studentId);
-        Course course = courseRepository.findByCourseId(courseId)
-                .orElseThrow(NotFoundCourseIdException::new);
-
-    }
 }

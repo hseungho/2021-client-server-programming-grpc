@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 public class CourseService {
     private final CourseRepository courseRepository;
 
-    public CourseService() {
-        this.courseRepository = new CourseRepository();
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
     }
 
     public List<Course> getAllCourseList() {
