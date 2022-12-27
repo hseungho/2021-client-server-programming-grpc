@@ -115,7 +115,7 @@ public class ClientGrpc {
     private void printStudent(List<ClientServer.Student> studentList) {
         studentTable.resetRows();
         List<StudentDto> studentDtos = studentList.stream().map(student -> new StudentDto(
-                student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getLastName(),
+                student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getDepartment(),
                 student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())
         ).toList();
         studentDtos.forEach(studentDto -> {

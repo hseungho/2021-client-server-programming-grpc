@@ -1,8 +1,7 @@
+import dto.request.StudentCreateRequest;
 import entity.Student;
-import vo.StudentVO;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StudentDtoConverter {
 
@@ -32,15 +31,15 @@ public class StudentDtoConverter {
                 .build();
     }
 
-    public static StudentVO toVO(ClientServer.Student studentDto) {
-        return new StudentVO(
-                studentDto.getId(),
+    public static StudentCreateRequest toCreateRequest(ClientServer.Student studentDto) {
+        return new StudentCreateRequest(
                 studentDto.getStudentId(),
                 studentDto.getFirstName(),
                 studentDto.getLastName(),
                 studentDto.getDepartment(),
                 studentDto.getCompletedCourseListList().stream()
-                        .map(CourseDtoConverter::toVO).collect(Collectors.toSet())
+                        .map(ClientServer.Course::getCourseId)
+                        .toList()
         );
     }
 

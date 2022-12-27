@@ -1,8 +1,7 @@
+import dto.request.CourseCreateRequest;
 import entity.Course;
-import vo.CourseVO;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CourseDtoConverter {
 
@@ -31,25 +30,14 @@ public class CourseDtoConverter {
                 .build();
     }
 
-    public static CourseVO toVO(ClientServer.Course courseDto) {
-        return new CourseVO(
-                courseDto.getId(),
+    public static CourseCreateRequest toCreateRequest(ClientServer.Course courseDto) {
+        return new CourseCreateRequest(
                 courseDto.getCourseId(),
                 courseDto.getProfName(),
                 courseDto.getCourseName(),
                 courseDto.getPrerequisiteList().stream()
-                        .map(CourseDtoConverter::toVO).collect(Collectors.toSet())
-        );
-    }
-
-    public static CourseVO toVO(entity.Course courseEntity) {
-        return new CourseVO(
-                courseEntity.getId(),
-                courseEntity.getCourseId(),
-                courseEntity.getProfName(),
-                courseEntity.getCourseName(),
-                courseEntity.getPrerequisite().stream()
-                        .map(CourseDtoConverter::toVO).collect(Collectors.toSet())
+                                .map(ClientServer.Course::getCourseId)
+                                        .toList()
         );
     }
 

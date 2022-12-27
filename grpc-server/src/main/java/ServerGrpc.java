@@ -1,5 +1,7 @@
 import applicationservice.CourseService;
 import applicationservice.StudentService;
+import dto.request.CourseCreateRequest;
+import dto.request.StudentCreateRequest;
 import entity.Course;
 import entity.Student;
 import exception.MyException;
@@ -10,8 +12,6 @@ import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
 import repository.CourseRepository;
 import repository.StudentRepository;
-import vo.CourseVO;
-import vo.StudentVO;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -77,11 +77,11 @@ public class ServerGrpc {
 
     public ClientServer.Status addStudent(ClientServer.Student studentDto) {
         System.out.println("\nLOG: addStudent");
-        StudentVO studentVo = StudentDtoConverter.toVO(studentDto);
+        StudentCreateRequest studentCreateRequest = StudentDtoConverter.toCreateRequest(studentDto);
         try {
-            studentService.addStudent(studentVo);
+            studentService.addStudent(studentCreateRequest);
         } catch (MyException.DuplicationDataException e) {
-            System.err.printf("LOG: create duplicate student, request id: %s\n", studentVo.getStudentId());
+            System.err.printf("LOG: create duplicate student, request id: %s\n", studentCreateRequest.getStudentId());
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
                     .setMessage(e.getMessage())
@@ -98,11 +98,11 @@ public class ServerGrpc {
 
     public ClientServer.Status addCourse(ClientServer.Course courseDto) {
         System.out.println("\nLOG: addCourse");
-        CourseVO courseVO = CourseDtoConverter.toVO(courseDto);
+        CourseCreateRequest courseCreateRequest = CourseDtoConverter.toCreateRequest(courseDto);
         try {
-            courseService.addCourse(courseVO);
+            courseService.addCourse(courseCreateRequest);
         } catch (MyException.DuplicationDataException e) {
-            System.err.printf("LOG: create duplicate course, request id: %s\n", courseVO.getCourseId());
+            System.err.printf("LOG: create duplicate course, request id: %s\n", courseCreateRequest.getCourseId());
             return ClientServer.Status.newBuilder()
                     .setStatus(409)
                     .setMessage(e.getMessage())
@@ -136,6 +136,8 @@ public class ServerGrpc {
         }
         return ClientServer.Status.newBuilder().setStatus(200).build();
     }
+
+
 
     private void startServer() {
         Thread serverThread = new Thread(() -> {

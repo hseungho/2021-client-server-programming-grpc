@@ -1,20 +1,19 @@
 import applicationservice.StudentService;
+import dto.request.StudentCreateRequest;
 import entity.Student;
 import exception.MyException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import repository.CourseRepository;
 import repository.StudentRepository;
-import vo.StudentVO;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+//@Transactional
 class StudentServiceTest {
 
     private static StudentService studentService;
@@ -49,15 +48,6 @@ class StudentServiceTest {
         assertEquals(student_2.getDepartment(), student_1.getDepartment());
     }
 
-    @Test
-    @Transactional
-    public void 영속성_체크를_위한_학생_이름_변경_및_확인() {
-        Student student_1 = studentService.getStudentById(1L);
-        student_1.setLastName("Update_test");
-
-        Student student_2 = studentService.getStudentById(1L);
-        assertEquals(student_1.getLastName(), student_2.getLastName());
-    }
 
     @Test
     public void 학생데이터_학생_ID_조회() {
@@ -69,26 +59,17 @@ class StudentServiceTest {
     @Transactional
     void 학생데이터_추가() {
         // case success
-        StudentVO student_1 = new StudentVO();
-        student_1.setStudentId("20221222");
-        student_1.setFirstName("Hwang");
-        student_1.setLastName("Seungho");
-        student_1.setDepartment("ICT");
-
         List<String> courseIds = List.of("12345", "23456", "17651");
-        CourseRepository courseRepository = new CourseRepository();
-        student_1.setCompletedCourses(courseIds.stream()
-                .map(courseRepository::findByCourseId)
-                .map(Optional::orElseThrow)
-                .map(CourseDtoConverter::toVO)
-                .collect(Collectors.toSet()));
+        StudentCreateRequest new_student = new StudentCreateRequest(
+                "20221222", "Hwang", "Seungho", "ICT", courseIds);
+
         try {
-            studentService.addStudent(student_1);
+            studentService.addStudent(new_student);
         } catch (MyException.DuplicationDataException e) {
             System.err.println(e.getMessage());
         }
         Student student_2 = studentService.getStudentByStudentId("20221222");
-        assertEquals(student_1.getStudentId(), student_2.getStudentId());
+        assertEquals(new_student.getStudentId(), student_2.getStudentId());
 
         studentService.deleteStudent(student_2.getStudentId()); // rollback
     }

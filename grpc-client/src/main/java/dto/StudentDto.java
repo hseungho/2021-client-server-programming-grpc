@@ -1,12 +1,13 @@
 package dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class StudentDto {
     private Long id;
     private String studentId;
@@ -14,4 +15,13 @@ public class StudentDto {
     private String lastName;
     private String department;
     private List<String> completedCourseIds;
+
+    public StudentDto(Long id, String studentId, String firstName, String lastName, String department, List<String> completedCourseIds) {
+        this.id = id;
+        this.studentId = studentId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.department = department;
+        this.completedCourseIds = new ArrayList<>(completedCourseIds);
+    }
 }

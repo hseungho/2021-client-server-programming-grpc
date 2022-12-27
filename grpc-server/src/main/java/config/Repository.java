@@ -33,12 +33,13 @@ public class Repository<T, ID> {
     }
 
     public Optional<T> findById(ID id) {
-        Session session = em.unwrap(Session.class);
-
         T value = em.find(domainClass, id);
 
         if(value == null) {
+            Session session = em.unwrap(Session.class);
+
             value = session.load(domainClass, (Serializable) id);
+
             em.persist(value);
         }
 

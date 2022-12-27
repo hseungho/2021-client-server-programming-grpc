@@ -1,13 +1,12 @@
 package entity;
 
+import dto.request.CourseCreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vo.CourseVO;
 
 import javax.persistence.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "course")
@@ -42,14 +41,16 @@ public class Course {
         this.prerequisite = prerequisite;
     }
 
-    public static Course createEntity(CourseVO courseVO) {
+    public Course(String courseId, String profName, String courseName) {
+        this.courseId = courseId;
+        this.profName = profName;
+        this.courseName = courseName;
+    }
+    public static Course createEntity(CourseCreateRequest courseCreateRequest) {
         return new Course(
-                courseVO.getId(),
-                courseVO.getCourseId(),
-                courseVO.getProfName(),
-                courseVO.getCourseName(),
-                courseVO.getPrerequisite().stream()
-                        .map(Course::createEntity).collect(Collectors.toSet())
+                courseCreateRequest.getCourseId(),
+                courseCreateRequest.getProfName(),
+                courseCreateRequest.getCourseName()
         );
     }
 }

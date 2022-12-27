@@ -1,12 +1,12 @@
 package applicationservice;
 
+import dto.request.StudentCreateRequest;
 import entity.Course;
 import entity.Student;
 import exception.MyException;
 import exception.NotFoundCourseIdException;
 import repository.CourseRepository;
 import repository.StudentRepository;
-import vo.StudentVO;
 
 import java.util.List;
 import java.util.Set;
@@ -36,8 +36,15 @@ public class StudentService {
                 .orElseThrow(() -> new MyException.NullDataException("Not exist student for this student id"));
     }
 
-    public void addStudent(StudentVO studentVo) {
-        Student student = Student.createEntity(studentVo);
+    public void addStudent(StudentCreateRequest studentCreateRequest) {
+        Student student = Student.createEntity(studentCreateRequest);
+        if(!studentCreateRequest.getCompletedCourses().isEmpty()) {
+            Set<Course> courses = studentCreateRequest.getCompletedCourses().stream()
+                    .map(courseId -> courseRepository.findByCourseId(courseId)
+                                        .orElseThrow(NotFoundCourseIdException::new))
+                    .collect(Collectors.toSet());
+            student.setCompletedCourseList(courses);
+        }
         addStudent(student);
     }
 

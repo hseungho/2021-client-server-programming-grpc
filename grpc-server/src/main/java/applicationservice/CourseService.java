@@ -1,10 +1,10 @@
 package applicationservice;
 
+import dto.request.CourseCreateRequest;
 import entity.Course;
 import exception.MyException;
 import exception.NotFoundCourseIdException;
 import repository.CourseRepository;
-import vo.CourseVO;
 
 import java.util.List;
 import java.util.Set;
@@ -21,8 +21,15 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public void addCourse(CourseVO courseVO) throws MyException.DuplicationDataException{
-        Course course = Course.createEntity(courseVO);
+    public void addCourse(CourseCreateRequest courseCreateRequest) throws MyException.DuplicationDataException{
+        Course course = Course.createEntity(courseCreateRequest);
+        if(!courseCreateRequest.getPrerequisiteIds().isEmpty()) {
+            Set<Course> preCourses = courseCreateRequest.getPrerequisiteIds().stream()
+                    .map(courseId -> courseRepository.findByCourseId(courseId)
+                            .orElseThrow(NotFoundCourseIdException::new))
+                    .collect(Collectors.toSet());
+            course.setPrerequisite(preCourses);
+        }
         addCourse(course);
     }
 
