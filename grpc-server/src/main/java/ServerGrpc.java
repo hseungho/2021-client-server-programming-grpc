@@ -64,19 +64,19 @@ public class ServerGrpc {
     }
 
     public ClientServer.StudentList getAllStudentList() {
-        System.out.println("\nLOG: getAllStudentList");
+        info("getAllStudentList");
         List<Student> students = studentService.getAllStudentList();
         return StudentDtoConverter.toProtoStudentList(students);
     }
 
     public ClientServer.CourseList getAllCourseList() {
-        System.out.println("\nLOG: getAllCourseList");
+        info("getAllCourseList");
         List<Course> courses = courseService.getAllCourseList();
         return CourseDtoConverter.toProtoCourseList(courses);
     }
 
     public ClientServer.Status addStudent(ClientServer.Student studentDto) {
-        System.out.println("\nLOG: addStudent");
+        info("addStudent [ID: "+studentDto.getStudentId()+"]");
         StudentCreateRequest studentCreateRequest = StudentDtoConverter.toCreateRequest(studentDto);
         try {
             studentService.addStudent(studentCreateRequest);
@@ -97,7 +97,7 @@ public class ServerGrpc {
     }
 
     public ClientServer.Status addCourse(ClientServer.Course courseDto) {
-        System.out.println("\nLOG: addCourse");
+        info("addCourse [ID: "+courseDto.getCourseId() +"]");
         CourseCreateRequest courseCreateRequest = CourseDtoConverter.toCreateRequest(courseDto);
         try {
             courseService.addCourse(courseCreateRequest);
@@ -112,7 +112,7 @@ public class ServerGrpc {
     }
 
     public ClientServer.Status deleteStudent(ClientServer.Id studentId) {
-        System.out.println("\nLOG: deleteStudent [ID: "+studentId.getId()+"]");
+        info("deleteStudent [ID: " +studentId.getId() +"]");
         try {
             studentService.deleteStudent(studentId.getId());
         } catch (MyException.InvalidedDataException e) {
@@ -125,7 +125,7 @@ public class ServerGrpc {
     }
 
     public ClientServer.Status deleteCourse(ClientServer.Id courseId) {
-        System.out.println("\nLOG: deleteCourse [ID: "+courseId.getId()+"]");
+        info("deleteCourse [ID: "+courseId.getId()+"]");
         try {
             courseService.deleteCourse(courseId.getId());
         } catch (MyException.InvalidedDataException e) {
@@ -137,6 +137,15 @@ public class ServerGrpc {
         return ClientServer.Status.newBuilder().setStatus(200).build();
     }
 
+    public ClientServer.Status register(ClientServer.Register registerDto) {
+        info(String.format("register [S_ID: %s, C_ID: %s", registerDto.getStudentId(), registerDto.getCourseId()));
+        studentService.register(registerDto.getStudentId(), registerDto.getCourseId());
+        return ClientServer.Status.newBuilder().setStatus(200).build();
+    }
+
+    private static void info(String log) {
+        System.out.println("\nLOG:" +log);
+    }
 
 
     private void startServer() {
