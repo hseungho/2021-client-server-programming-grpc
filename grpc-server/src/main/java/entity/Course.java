@@ -1,6 +1,7 @@
 package entity;
 
 import dto.request.CourseCreateRequest;
+import exception.LMSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -56,7 +57,12 @@ public class Course {
     }
 
     public void validateRegister(Set<Course> completedCourseList) {
-
+        this.getPrerequisite()
+                .forEach(preCourse -> {
+                    if(!completedCourseList.contains(preCourse)) {
+                        throw new LMSException("Have not completed prerequisite course of this course");
+                    }
+                });
     }
 
     @Override
