@@ -69,4 +69,10 @@ public class Student {
                 studentCreateRequest.getDepartment()
         );
     }
+
+    public void register(Course registerCourse) {
+        registerCourse.validatePrerequisite(this.getCompletedCourseList());
+
+        this.getCompletedCourseList().add(registerCourse);
+    }
 }

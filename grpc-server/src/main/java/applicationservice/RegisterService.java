@@ -21,5 +21,7 @@ public class RegisterService {
         Student student = studentRepository.findByStudentId(studentId).orElseThrow(NotFoundStudentIdException::new);
         Course course = courseRepository.findByCourseId(courseId).orElseThrow(NotFoundCourseIdException::new);
 
+        student.register(course);
+
     }
 }

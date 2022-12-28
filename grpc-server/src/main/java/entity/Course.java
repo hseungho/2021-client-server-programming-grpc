@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -52,5 +53,22 @@ public class Course {
                 courseCreateRequest.getProfName(),
                 courseCreateRequest.getCourseName()
         );
+    }
+
+    public void validatePrerequisite(Set<Course> completedCourseList) {
+        if(!completedCourseList.contains(this)) {
+
+        }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(this==other) return true;
+        return other instanceof Course c && Objects.equals(this.id, c.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
