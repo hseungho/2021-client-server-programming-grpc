@@ -55,10 +55,8 @@ public class Course {
         );
     }
 
-    public void validatePrerequisite(Set<Course> completedCourseList) {
-        if(!completedCourseList.contains(this)) {
+    public void validateRegister(Set<Course> completedCourseList) {
 
-        }
     }
 
     @Override

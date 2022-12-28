@@ -1,6 +1,7 @@
 package entity;
 
 import dto.request.StudentCreateRequest;
+import exception.LMSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -71,7 +72,13 @@ public class Student {
     }
 
     public void register(Course registerCourse) {
-        registerCourse.validatePrerequisite(this.getCompletedCourseList());
+        Set<Course> myCompletedCourses = this.getCompletedCourseList();
+
+        if(myCompletedCourses.contains(registerCourse)) {
+            throw new LMSException("this course has already been taken.");
+        }
+
+        registerCourse.validateRegister(this.getCompletedCourseList());
 
         this.getCompletedCourseList().add(registerCourse);
     }
