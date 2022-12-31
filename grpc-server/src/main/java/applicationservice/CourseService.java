@@ -51,9 +51,14 @@ public class CourseService {
     public void deleteCourse(String courseId) {
         try {
             courseRepository.deleteByCourseId(courseId);
-        } catch (DatabaseException e) {
+
+        } catch (DatabaseException.NotExistException e) {
             System.err.println("LOG: "+e.getMessage());
             throw new NotFoundStudentIdException();
+
+        } catch (DatabaseException e) {
+            System.err.println("LOG: "+e.getMessage());
+            throw new LMSException("Sorry, there was an error on the server. we'll figure it out in a minute");
         }
     }
 

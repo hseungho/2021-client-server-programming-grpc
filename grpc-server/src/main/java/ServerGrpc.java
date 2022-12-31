@@ -81,21 +81,25 @@ public class ServerGrpc {
     public ClientServer.Status addStudent(ClientServer.Student studentDto) {
         info("addStudent [ID: "+studentDto.getStudentId()+"]");
         StudentCreateRequest studentCreateRequest = StudentDtoConverter.toCreateRequest(studentDto);
+
         try {
             studentService.addStudent(studentCreateRequest);
+
         } catch (NotFoundCourseIdException e) {
             System.err.println("LOG: request invalid course ID");
             return ClientServer.Status.newBuilder()
                     .setCode(HttpResponseCode.NOT_FOUND.getCode())
                     .setMessage(e.getMessage())
                     .build();
+
         } catch (LMSException e) {
             System.err.printf("LOG: create duplicate student, request id: %s\n", studentCreateRequest.getStudentId());
             return ClientServer.Status.newBuilder()
                     .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
-        } 
+        }
+
         return ClientServer.Status.newBuilder()
                 .setCode(HttpResponseCode.CREATED.getCode())
                 .setMessage("ADD STUDENT SUCCESS !!!")
@@ -105,8 +109,17 @@ public class ServerGrpc {
     public ClientServer.Status addCourse(ClientServer.Course courseDto) {
         info("addCourse [ID: "+courseDto.getCourseId() +"]");
         CourseCreateRequest courseCreateRequest = CourseDtoConverter.toCreateRequest(courseDto);
+
         try {
             courseService.addCourse(courseCreateRequest);
+
+        } catch (NotFoundCourseIdException e) {
+            System.err.println("LOG: request invalid course ID");
+            return ClientServer.Status.newBuilder()
+                    .setCode(HttpResponseCode.NOT_FOUND.getCode())
+                    .setMessage(e.getMessage())
+                    .build();
+
         } catch (LMSException e) {
             System.err.printf("LOG: create duplicate course, request id: %s\n", courseCreateRequest.getCourseId());
             return ClientServer.Status.newBuilder()
@@ -114,6 +127,7 @@ public class ServerGrpc {
                     .setMessage(e.getMessage())
                     .build();
         }
+
         return ClientServer.Status.newBuilder()
                 .setCode(HttpResponseCode.CREATED.getCode())
                 .setMessage("ADD COURSE SUCCESS !!!")
@@ -140,12 +154,14 @@ public class ServerGrpc {
         info("deleteCourse [ID: "+courseId.getId()+"]");
         try {
             courseService.deleteCourse(courseId.getId());
+
         } catch (LMSException e) {
             return ClientServer.Status.newBuilder()
                     .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
         }
+
         return ClientServer.Status.newBuilder()
                 .setCode(HttpResponseCode.OK.getCode())
                 .setMessage("DELETE COURSE SUCCESS !!!")

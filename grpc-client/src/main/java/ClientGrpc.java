@@ -283,7 +283,7 @@ public class ClientGrpc {
         Arrays.stream(inputs).forEach(input -> {
             if (input.isBlank()) {
                 StringBuilder typeBuilder = new StringBuilder();
-                inputType.forEach(type -> typeBuilder.append(type).append(" "));
+                inputType.forEach(type -> typeBuilder.append(type).append(" / "));
                 throw new MyException.NullDataException("You have to input all necessary information\nnecessary : " + typeBuilder);
             }
         });

@@ -84,7 +84,7 @@ public class Repository<T, ID> {
 
     public void delete(T entity) throws DatabaseException {
         if(entity == null) {
-            throw new DatabaseException("cannot delete this entity doesn't exist.");
+            throw new DatabaseException.NotExistException("cannot delete this entity doesn't exist.");
         }
 
         em.getTransaction().begin();
@@ -94,10 +94,9 @@ public class Repository<T, ID> {
             ID id = (ID) em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
             T existing = em.find(domainClass, id);
             if(existing == null) {
-                throw new DatabaseException("cannot delete this entity doesn't exist.");
+                throw new DatabaseException.NotExistException("cannot delete this entity doesn't exist.");
             }
 
-            em.detach(entity);
             em.remove(em.contains(entity) ? entity : em.merge(entity));
             em.flush();
 
@@ -105,6 +104,7 @@ public class Repository<T, ID> {
 
         } catch (RuntimeException e) {
             em.getTransaction().rollback();
+            throw new DatabaseException("occurred internal database error.");
         }
     }
 
