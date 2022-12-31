@@ -1,6 +1,7 @@
-package config;
+package repository;
 
-import exception.MyException;
+import config.HibernateFactory;
+import exception.DatabaseException;
 import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
@@ -81,9 +82,9 @@ public class Repository<T, ID> {
         return entity;
     }
 
-    public void delete(T entity) throws MyException.NullDataException {
+    public void delete(T entity) throws DatabaseException {
         if(entity == null) {
-            throw new MyException.NullDataException("cannot delete this entity doesn't exist.");
+            throw new DatabaseException("cannot delete this entity doesn't exist.");
         }
 
         em.getTransaction().begin();
@@ -93,7 +94,7 @@ public class Repository<T, ID> {
             ID id = (ID) em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
             T existing = em.find(domainClass, id);
             if(existing == null) {
-                throw new MyException.NullDataException("cannot delete this entity doesn't exist.");
+                throw new DatabaseException("cannot delete this entity doesn't exist.");
             }
 
             em.detach(entity);

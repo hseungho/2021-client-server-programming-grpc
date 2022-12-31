@@ -5,7 +5,7 @@ import dto.request.CourseCreateRequest;
 import dto.request.StudentCreateRequest;
 import entity.Course;
 import entity.Student;
-import exception.MyException;
+import exception.LMSException;
 import exception.NotFoundCourseIdException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -83,20 +83,23 @@ public class ServerGrpc {
         StudentCreateRequest studentCreateRequest = StudentDtoConverter.toCreateRequest(studentDto);
         try {
             studentService.addStudent(studentCreateRequest);
-        } catch (MyException.DuplicationDataException e) {
-            System.err.printf("LOG: create duplicate student, request id: %s\n", studentCreateRequest.getStudentId());
-            return ClientServer.Status.newBuilder()
-                    .setStatus(409)
-                    .setMessage(e.getMessage())
-                    .build();
         } catch (NotFoundCourseIdException e) {
             System.err.println("LOG: request invalid course ID");
             return ClientServer.Status.newBuilder()
-                    .setStatus(409)
+                    .setCode(HttpResponseCode.NOT_FOUND.getCode())
                     .setMessage(e.getMessage())
                     .build();
-        }
-        return ClientServer.Status.newBuilder().setStatus(201).build();
+        } catch (LMSException e) {
+            System.err.printf("LOG: create duplicate student, request id: %s\n", studentCreateRequest.getStudentId());
+            return ClientServer.Status.newBuilder()
+                    .setCode(HttpResponseCode.BAD_REQUEST.getCode())
+                    .setMessage(e.getMessage())
+                    .build();
+        } 
+        return ClientServer.Status.newBuilder()
+                .setCode(HttpResponseCode.CREATED.getCode())
+                .setMessage("ADD STUDENT SUCCESS !!!")
+                .build();
     }
 
     public ClientServer.Status addCourse(ClientServer.Course courseDto) {
@@ -104,62 +107,81 @@ public class ServerGrpc {
         CourseCreateRequest courseCreateRequest = CourseDtoConverter.toCreateRequest(courseDto);
         try {
             courseService.addCourse(courseCreateRequest);
-        } catch (MyException.DuplicationDataException e) {
+        } catch (LMSException e) {
             System.err.printf("LOG: create duplicate course, request id: %s\n", courseCreateRequest.getCourseId());
             return ClientServer.Status.newBuilder()
-                    .setStatus(409)
+                    .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
         }
-        return ClientServer.Status.newBuilder().setStatus(201).build();
+        return ClientServer.Status.newBuilder()
+                .setCode(HttpResponseCode.CREATED.getCode())
+                .setMessage("ADD COURSE SUCCESS !!!")
+                .build();
     }
 
     public ClientServer.Status deleteStudent(ClientServer.Id studentId) {
         info("deleteStudent [ID: " +studentId.getId() +"]");
         try {
             studentService.deleteStudent(studentId.getId());
-        } catch (MyException.InvalidedDataException e) {
+        } catch (LMSException e) {
             return ClientServer.Status.newBuilder()
-                    .setStatus(409)
+                    .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
         }
-        return ClientServer.Status.newBuilder().setStatus(200).build();
+        return ClientServer.Status.newBuilder()
+                .setCode(HttpResponseCode.OK.getCode())
+                .setMessage("DELETE STUDENT SUCCESS !!!")
+                .build();
     }
 
     public ClientServer.Status deleteCourse(ClientServer.Id courseId) {
         info("deleteCourse [ID: "+courseId.getId()+"]");
         try {
             courseService.deleteCourse(courseId.getId());
-        } catch (MyException.InvalidedDataException e) {
+        } catch (LMSException e) {
             return ClientServer.Status.newBuilder()
-                    .setStatus(409)
+                    .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
         }
-        return ClientServer.Status.newBuilder().setStatus(200).build();
+        return ClientServer.Status.newBuilder()
+                .setCode(HttpResponseCode.OK.getCode())
+                .setMessage("DELETE COURSE SUCCESS !!!")
+                .build();
     }
 
     public ClientServer.Status register(ClientServer.Register registerDto) {
         info(String.format("register [S_ID: %s, C_ID: %s]", registerDto.getStudentId(), registerDto.getCourseId()));
         try {
             registerService.register(registerDto.getStudentId(), registerDto.getCourseId());
-        } catch (MyException e) {
+        } catch (LMSException e) {
             return ClientServer.Status.newBuilder()
-                    .setStatus(409)
+                    .setCode(HttpResponseCode.BAD_REQUEST.getCode())
                     .setMessage(e.getMessage())
                     .build();
         }
-        return ClientServer.Status.newBuilder().setStatus(200).build();
+        return ClientServer.Status.newBuilder()
+                .setCode(HttpResponseCode.OK.getCode())
+                .setMessage("REGISTER SUCCESS !!!")
+                .build();
     }
 
     public ClientServer.CourseList getAllRegisterOfStudent(ClientServer.Id studentId) {
         info(String.format("getAllRegisterOfStudent [S_ID: %s]", studentId.getId()));
         try {
-            registerService.getAllRegisterCourseOfStudent(studentId.getId());
-        } catch (MyException e) {
-            return  ClientServer.CourseList.newBuilder()
-                    .setStatus(409)
+            List<Course> allRegisterCourseOfStudent = registerService.getAllRegisterCourseOfStudent(studentId.getId());
+
+            return CourseDtoConverter.toProtoCourseList(allRegisterCourseOfStudent);
+
+        } catch (LMSException e) {
+            return ClientServer.CourseList.newBuilder()
+                    .setStatus(ClientServer.Status.newBuilder()
+                            .setCode(HttpResponseCode.BAD_REQUEST.getCode())
+                            .setMessage(e.getMessage())
+                            .build())
+                    .build();
         }
     }
 

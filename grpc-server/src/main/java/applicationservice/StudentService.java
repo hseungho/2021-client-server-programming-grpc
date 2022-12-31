@@ -3,7 +3,8 @@ package applicationservice;
 import dto.request.StudentCreateRequest;
 import entity.Course;
 import entity.Student;
-import exception.MyException;
+import exception.DatabaseException;
+import exception.LMSException;
 import exception.NotFoundCourseIdException;
 import exception.NotFoundStudentIdException;
 import repository.CourseRepository;
@@ -52,7 +53,7 @@ public class StudentService {
     public void addStudent(Student student) {
         studentRepository.findByStudentId(student.getStudentId()).stream().findAny()
                 .ifPresent(s -> {
-                    throw new MyException.DuplicationDataException("This student id is duplicated");
+                    throw new LMSException("This student id is duplicated");
                 });
         Set<Course> completedCourses = student.getCompletedCourseList().stream().map(course ->
                 courseRepository.findByCourseId(course.getCourseId())
@@ -65,7 +66,7 @@ public class StudentService {
     public void deleteStudent(String studentId) {
         try {
             studentRepository.deleteByStudentId(studentId);
-        } catch (MyException.NullDataException e) {
+        } catch (DatabaseException e) {
             System.err.println("LOG: "+e.getMessage());
             throw new NotFoundStudentIdException();
         }

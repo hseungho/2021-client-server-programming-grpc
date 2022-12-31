@@ -13,11 +13,11 @@ public enum HttpResponseCode {
     // 500
     INTERNAL_SERVER_ERROR(500); // 서버 내의 문제가 발생하였음
 
-    int code;
+    private int code;
     HttpResponseCode(int code) {
         this.code = code;
     }
-    int getCode() {
+    public int getCode() {
         return code;
     }
 }

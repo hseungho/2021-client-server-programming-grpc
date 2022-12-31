@@ -105,11 +105,10 @@ public class ClientGrpc {
 
     private void showStudentList() {
         ClientServer.StudentList studentList = stub.getAllStudentData(Empty.newBuilder().build());
-        switch (studentList.getStatus()) {
-            case StringConstant.STATUS_SUCCESS -> printStudent(studentList.getStudentList());
-            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- NO STUDENT DATA ---");
-            default -> {}
-        }
+
+        response(studentList.getStatus());
+
+        printStudent(studentList.getStudentList());
     }
 
     private void printStudent(List<ClientServer.Student> studentList) {
@@ -130,11 +129,10 @@ public class ClientGrpc {
 
     private void showCourseList() {
         ClientServer.CourseList courseList = stub.getAllCourseData(Empty.newBuilder().build());
-        switch (courseList.getStatus()) {
-            case StringConstant.STATUS_SUCCESS -> printCourse(courseList.getCourseList());
-            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- No COURSE DATA ---");
-            default -> {}
-        }
+
+        response(courseList.getStatus());
+
+        printCourse(courseList.getCourseList());
     }
 
     private void printCourse(List<ClientServer.Course> courseList) {
@@ -176,7 +174,8 @@ public class ClientGrpc {
                 .addAllCompletedCourseList(completedCourseList)
                 .build();
         ClientServer.Status status = stub.addStudent(student);
-        responseStatus(status, "ADD SUCCESS !!!");
+
+        response(status);
     }
 
     private void deleteStudent() throws IOException, MyException {
@@ -186,8 +185,10 @@ public class ClientGrpc {
             throw new MyException.NullDataException("You have to input student id deleted.");
         }
         ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(studentId).build();
-        ClientServer.Status responseStatus = stub.deleteStudent(requestId);
-        responseStatus(responseStatus, "DELETE SUCCESS !!!");
+
+        ClientServer.Status status = stub.deleteStudent(requestId);
+
+        response(status);
     }
 
     private void addCourse() throws IOException, MyException {
@@ -208,8 +209,10 @@ public class ClientGrpc {
                 .setProfName(profName)
                 .setCourseName(courseName)
                 .addAllPrerequisite(prerequisiteList).build();
+
         ClientServer.Status status = stub.addCourse(course);
-        responseStatus(status, "ADD SUCCESS !!!");
+
+        response(status);
     }
 
     private void deleteCourse() throws IOException, MyException {
@@ -219,8 +222,10 @@ public class ClientGrpc {
             throw new MyException.NullDataException("You have to input course id deleted.");
         }
         ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(courseId).build();
-        ClientServer.Status responseStatus = stub.deleteCourse(requestId);
-        responseStatus(responseStatus, "DELETE SUCCESS !!!");
+
+        ClientServer.Status status = stub.deleteCourse(requestId);
+
+        response(status);
     }
 
     private void registerCourse() {
@@ -231,14 +236,20 @@ public class ClientGrpc {
         
     }
 
-    private void responseStatus(ClientServer.Status status, String successMessage) throws MyException{
-        if(status.getStatus() == 201 || status.getStatus() == 200) {
-            System.out.println(successMessage);
-        } else if(status.getStatus() == 409) {
-            throw new MyException.DuplicationDataException(status.getMessage());
-        } else {
-            throw new MyException(status.getMessage());
+    private void response(ClientServer.Status status) {
+        errorResponse(status);
+        successResponse(status);
+    }
+
+    private void successResponse(ClientServer.Status status) {
+        if(!status.getMessage().isBlank()) {
+            System.out.println(status.getMessage());
         }
     }
 
+    private void errorResponse(ClientServer.Status status) {
+        if(status.getCode() >= HttpResponseCode.BAD_REQUEST.getCode()) {
+            throw new MyException(status.getMessage());
+        }
+    }
 }

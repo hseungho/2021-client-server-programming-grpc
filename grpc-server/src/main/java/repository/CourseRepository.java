@@ -1,6 +1,5 @@
 package repository;
 
-import config.Repository;
 import entity.Course;
 
 import java.util.Optional;

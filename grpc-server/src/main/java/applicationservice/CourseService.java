@@ -2,8 +2,10 @@ package applicationservice;
 
 import dto.request.CourseCreateRequest;
 import entity.Course;
-import exception.MyException;
+import exception.DatabaseException;
+import exception.LMSException;
 import exception.NotFoundCourseIdException;
+import exception.NotFoundStudentIdException;
 import repository.CourseRepository;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public void addCourse(CourseCreateRequest courseCreateRequest) throws MyException.DuplicationDataException{
+    public void addCourse(CourseCreateRequest courseCreateRequest) {
         Course course = Course.createEntity(courseCreateRequest);
         if(!courseCreateRequest.getPrerequisiteIds().isEmpty()) {
             Set<Course> preCourses = courseCreateRequest.getPrerequisiteIds().stream()
@@ -36,7 +38,7 @@ public class CourseService {
     public void addCourse(Course course) {
         courseRepository.findByCourseId(course.getCourseId()).stream().findAny()
                 .ifPresent(c -> {
-                    throw new MyException.DuplicationDataException("This course id is duplicated");
+                    throw new LMSException("This course id is duplicated");
                 });
         Set<Course> prerequisites = course.getPrerequisite().stream().map(pre_course ->
                 courseRepository.findByCourseId(pre_course.getCourseId())
@@ -47,10 +49,12 @@ public class CourseService {
     }
 
     public void deleteCourse(String courseId) {
-        if(courseRepository.findByCourseId(courseId).isEmpty()) {
-            throw new MyException.InvalidedDataException("This course id doesn't exist");
+        try {
+            courseRepository.deleteByCourseId(courseId);
+        } catch (DatabaseException e) {
+            System.err.println("LOG: "+e.getMessage());
+            throw new NotFoundStudentIdException();
         }
-        courseRepository.deleteByCourseId(courseId);
     }
 
 }

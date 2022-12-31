@@ -7,12 +7,17 @@ public class StudentDtoConverter {
 
     public static ClientServer.StudentList toProtoStudentList(List<Student> students) {
         ClientServer.StudentList protoStudentList;
+
         List<ClientServer.Student> protoStudents = students.stream()
                 .map(StudentDtoConverter::toProtoStudent).toList();
+
         protoStudentList = ClientServer.StudentList.newBuilder()
-                .setStatus("SUCCESS")
+                .setStatus(ClientServer.Status.newBuilder()
+                        .setCode(HttpResponseCode.OK.getCode())
+                        .build())
                 .addAllStudent(protoStudents)
                 .build();
+
         return protoStudentList;
     }
 

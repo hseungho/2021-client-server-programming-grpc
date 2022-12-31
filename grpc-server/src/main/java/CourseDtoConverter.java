@@ -7,12 +7,17 @@ public class CourseDtoConverter {
 
     public static ClientServer.CourseList toProtoCourseList(List<Course> courses) {
         ClientServer.CourseList protoCourseList;
+
         List<ClientServer.Course> protoCourses = courses.stream()
                 .map(CourseDtoConverter::toProtoCourse).toList();
+
         protoCourseList = ClientServer.CourseList.newBuilder()
-                .setStatus("SUCCESS")
+                .setStatus(ClientServer.Status.newBuilder()
+                        .setCode(HttpResponseCode.OK.getCode())
+                        .build())
                 .addAllCourse(protoCourses)
                 .build();
+
         return protoCourseList;
     }
 

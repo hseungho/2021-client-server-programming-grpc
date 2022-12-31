@@ -1,7 +1,6 @@
 import applicationservice.StudentService;
 import dto.request.StudentCreateRequest;
 import entity.Student;
-import exception.MyException;
 import exception.NotFoundStudentIdException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
