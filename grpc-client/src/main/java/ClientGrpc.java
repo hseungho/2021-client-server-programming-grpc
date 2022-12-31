@@ -10,6 +10,7 @@ import util.CommandLineTable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientGrpc {
@@ -105,17 +106,16 @@ public class ClientGrpc {
 
     private void showStudentList() {
         ClientServer.StudentList studentList = stub.getAllStudentData(Empty.newBuilder().build());
-        switch (studentList.getStatus()) {
-            case StringConstant.STATUS_SUCCESS -> printStudent(studentList.getStudentList());
-            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- NO STUDENT DATA ---");
-            default -> {}
-        }
+
+        response(studentList.getStatus());
+
+        printStudent(studentList.getStudentList());
     }
 
     private void printStudent(List<ClientServer.Student> studentList) {
         studentTable.resetRows();
         List<StudentDto> studentDtos = studentList.stream().map(student -> new StudentDto(
-                student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getLastName(),
+                student.getId(), student.getStudentId(), student.getFirstName(), student.getLastName(), student.getDepartment(),
                 student.getCompletedCourseListList().stream().map(ClientServer.Course::getCourseId).toList())
         ).toList();
         studentDtos.forEach(studentDto -> {
@@ -130,11 +130,10 @@ public class ClientGrpc {
 
     private void showCourseList() {
         ClientServer.CourseList courseList = stub.getAllCourseData(Empty.newBuilder().build());
-        switch (courseList.getStatus()) {
-            case StringConstant.STATUS_SUCCESS -> printCourse(courseList.getCourseList());
-            case StringConstant.STATUS_FAILED_NO_DATA -> System.out.println("--- No COURSE DATA ---");
-            default -> {}
-        }
+
+        response(courseList.getStatus());
+
+        printCourse(courseList.getCourseList());
     }
 
     private void printCourse(List<ClientServer.Course> courseList) {
@@ -161,9 +160,10 @@ public class ClientGrpc {
         System.out.print("Student Last Name: "); String studentLastName = br.readLine().trim();
         System.out.print("Student Department: "); String studentDept = br.readLine().trim();
         System.out.print("Student Completed Course List: "); String completedCourse = br.readLine().trim();
-        if(studentId.isBlank() || studentFirstName.isBlank() || studentLastName.isBlank() || studentDept.isBlank()) {
-            throw new MyException.NullDataException("You have to input every student information.");
-        }
+
+        validateInputValue(List.of("Student ID", "First Name", "Last Name", "Department"),
+                studentId, studentFirstName, studentLastName, studentDept);
+
         List<String> strCompletedCourseList = List.of(completedCourse.split(" "));
         List<ClientServer.Course> completedCourseList = strCompletedCourseList.stream().map(courseId ->
                 ClientServer.Course.newBuilder().setCourseId(courseId).build()).toList();
@@ -176,18 +176,21 @@ public class ClientGrpc {
                 .addAllCompletedCourseList(completedCourseList)
                 .build();
         ClientServer.Status status = stub.addStudent(student);
-        responseStatus(status, "ADD SUCCESS !!!");
+
+        response(status);
     }
 
     private void deleteStudent() throws IOException, MyException {
         System.out.println("<<<<<<<<<<<<<<   Delete Student   >>>>>>>>>>>>>>");
         System.out.print("Student ID: "); String studentId = br.readLine().trim();
-        if(studentId.isBlank()) {
-            throw new MyException.NullDataException("You have to input student id deleted.");
-        }
+
+        validateInputValue(List.of("Student ID"), studentId);
+
         ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(studentId).build();
-        ClientServer.Status responseStatus = stub.deleteStudent(requestId);
-        responseStatus(responseStatus, "DELETE SUCCESS !!!");
+
+        ClientServer.Status status = stub.deleteStudent(requestId);
+
+        response(status);
     }
 
     private void addCourse() throws IOException, MyException {
@@ -196,10 +199,12 @@ public class ClientGrpc {
         System.out.print("Prof Name: "); String profName = br.readLine().trim();
         System.out.print("Course Name: "); String courseName = br.readLine().trim();
         System.out.print("Course Prerequisite List: "); String prerequisite = br.readLine().trim();
-        if(courseId.isBlank() || profName.isBlank() || courseName.isBlank()) {
-            throw new MyException.NullDataException("You have to input every course information.");
-        }
+
+        validateInputValue(List.of("Course ID", "Prof Name", "Course Name"),
+                courseId, profName, courseName);
+
         List<String> strPrerequisiteList = List.of(prerequisite.split(" "));
+
         List<ClientServer.Course> prerequisiteList = strPrerequisiteList.stream().map(preCourseId ->
                 ClientServer.Course.newBuilder().setCourseId(preCourseId).build()).toList();
 
@@ -208,37 +213,79 @@ public class ClientGrpc {
                 .setProfName(profName)
                 .setCourseName(courseName)
                 .addAllPrerequisite(prerequisiteList).build();
+
         ClientServer.Status status = stub.addCourse(course);
-        responseStatus(status, "ADD SUCCESS !!!");
+
+        response(status);
     }
 
     private void deleteCourse() throws IOException, MyException {
         System.out.println("<<<<<<<<<<<<<<   Delete Course   >>>>>>>>>>>>>>");
         System.out.print("Course ID: "); String courseId = br.readLine().trim();
-        if(courseId.isBlank()) {
-            throw new MyException.NullDataException("You have to input course id deleted.");
-        }
+
+        validateInputValue(List.of("Course ID"), courseId);
+
         ClientServer.Id requestId = ClientServer.Id.newBuilder().setId(courseId).build();
-        ClientServer.Status responseStatus = stub.deleteCourse(requestId);
-        responseStatus(responseStatus, "DELETE SUCCESS !!!");
+
+        ClientServer.Status status = stub.deleteCourse(requestId);
+
+        response(status);
     }
 
-    private void registerCourse() {
-        
+    private void registerCourse() throws IOException {
+        System.out.println("<<<<<<<<<<<<<<   Make Reservation   >>>>>>>>>>>>>>");
+        System.out.print("Student ID: "); String studentId = br.readLine().trim();
+        System.out.print("Course ID: "); String courseId = br.readLine().trim();
+
+        validateInputValue(List.of("Student ID", "Course ID"), studentId, courseId);
+
+        ClientServer.Register registerRequest = ClientServer.Register.newBuilder()
+                .setStudentId(studentId)
+                .setCourseId(courseId)
+                .build();
+
+        ClientServer.Status status = stub.register(registerRequest);
+
+        response(status);
     }
 
-    private void showRegister() {
-        
+    private void showRegister() throws IOException {
+        System.out.println("<<<<<<<<<<<<<<   List Reservation   >>>>>>>>>>>>>>");
+        System.out.print("Student ID: "); String studentId = br.readLine().trim();
+
+        ClientServer.CourseList courseList = stub.getAllRegisterData(
+                ClientServer.Id.newBuilder().setId(studentId).build()
+        );
+
+        response(courseList.getStatus());
+
+        printCourse(courseList.getCourseList());
     }
 
-    private void responseStatus(ClientServer.Status status, String successMessage) throws MyException{
-        if(status.getStatus() == 201 || status.getStatus() == 200) {
-            System.out.println(successMessage);
-        } else if(status.getStatus() == 409) {
-            throw new MyException.DuplicationDataException(status.getMessage());
-        } else {
+    private void response(ClientServer.Status status) {
+        errorResponse(status);
+        successResponse(status);
+    }
+
+    private void successResponse(ClientServer.Status status) {
+        if(!status.getMessage().isBlank()) {
+            System.out.println(status.getMessage());
+        }
+    }
+
+    private void errorResponse(ClientServer.Status status) {
+        if(status.getCode() >= HttpResponseCode.BAD_REQUEST.getCode()) {
             throw new MyException(status.getMessage());
         }
     }
 
+    private void validateInputValue(List<String> inputType, String... inputs) {
+        Arrays.stream(inputs).forEach(input -> {
+            if (input.isBlank()) {
+                StringBuilder typeBuilder = new StringBuilder();
+                inputType.forEach(type -> typeBuilder.append(type).append(" / "));
+                throw new MyException.NullDataException("You have to input all necessary information\nnecessary : " + typeBuilder);
+            }
+        });
+    }
 }

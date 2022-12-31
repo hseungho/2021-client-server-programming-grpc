@@ -1,13 +1,14 @@
 package entity;
 
+import dto.request.CourseCreateRequest;
+import exception.LMSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vo.CourseVO;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "course")
@@ -26,7 +27,7 @@ public class Course {
     private String courseName;
 
     // TODO OneToMany -> ManyToMany -> Entity 승격?
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "prerequisite",
             joinColumns = @JoinColumn(name = "c_id"),
@@ -42,14 +43,36 @@ public class Course {
         this.prerequisite = prerequisite;
     }
 
-    public static Course createEntity(CourseVO courseVO) {
+    public Course(String courseId, String profName, String courseName) {
+        this.courseId = courseId;
+        this.profName = profName;
+        this.courseName = courseName;
+    }
+    public static Course createEntity(CourseCreateRequest courseCreateRequest) {
         return new Course(
-                courseVO.getId(),
-                courseVO.getCourseId(),
-                courseVO.getProfName(),
-                courseVO.getCourseName(),
-                courseVO.getPrerequisite().stream()
-                        .map(Course::createEntity).collect(Collectors.toSet())
+                courseCreateRequest.getCourseId(),
+                courseCreateRequest.getProfName(),
+                courseCreateRequest.getCourseName()
         );
+    }
+
+    public void validateRegister(Set<Course> completedCourseList) {
+        this.getPrerequisite()
+                .forEach(preCourse -> {
+                    if(!completedCourseList.contains(preCourse)) {
+                        throw new LMSException("Have not completed prerequisite course of this course.");
+                    }
+                });
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(this==other) return true;
+        return other instanceof Course c && Objects.equals(this.id, c.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

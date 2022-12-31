@@ -1,14 +1,14 @@
 package entity;
 
+import dto.request.StudentCreateRequest;
+import exception.LMSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vo.StudentVO;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "student")
@@ -36,12 +36,18 @@ public class Student {
     private Set<Course> completedCourseList;
 
     public Student(String studentId, String firstName, String lastName, String department, Set<Course> completedCourseList) {
-        super();
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.department = department;
         this.completedCourseList = completedCourseList;
+    }
+
+    public Student(String studentId, String firstName, String lastName, String department) {
+        this.studentId = studentId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.department = department;
     }
 
     private Student(Student c_student) {
@@ -56,15 +62,24 @@ public class Student {
         return new Student(student);
     }
 
-    public static Student createEntity(StudentVO studentVo) {
+    public static Student createEntity(StudentCreateRequest studentCreateRequest) {
         return new Student(
-                studentVo.getId(),
-                studentVo.getStudentId(),
-                studentVo.getFirstName(),
-                studentVo.getLastName(),
-                studentVo.getDepartment(),
-                studentVo.getCompletedCourses().stream()
-                        .map(Course::createEntity).collect(Collectors.toSet())
+                studentCreateRequest.getStudentId(),
+                studentCreateRequest.getFirstName(),
+                studentCreateRequest.getLastName(),
+                studentCreateRequest.getDepartment()
         );
+    }
+
+    public void register(Course registerCourse) {
+        Set<Course> myCompletedCourses = this.getCompletedCourseList();
+
+        if(myCompletedCourses.contains(registerCourse)) {
+            throw new LMSException("this course has already been taken.");
+        }
+
+        registerCourse.validateRegister(this.getCompletedCourseList());
+
+        this.getCompletedCourseList().add(registerCourse);
     }
 }

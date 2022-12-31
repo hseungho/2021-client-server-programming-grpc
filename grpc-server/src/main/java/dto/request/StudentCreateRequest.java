@@ -1,20 +1,19 @@
-package vo;
+package dto.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentVO {
-    private Long id;
+public class StudentCreateRequest {
     private String studentId;
     private String firstName;
     private String lastName;
     private String department;
-    private Set<CourseVO> completedCourses;
+    private List<String> completedCourses;
 
 }

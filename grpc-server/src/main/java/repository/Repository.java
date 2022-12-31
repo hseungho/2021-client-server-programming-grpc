@@ -1,6 +1,7 @@
-package config;
+package repository;
 
-import exception.MyException;
+import config.HibernateFactory;
+import exception.DatabaseException;
 import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
@@ -33,12 +34,13 @@ public class Repository<T, ID> {
     }
 
     public Optional<T> findById(ID id) {
-        Session session = em.unwrap(Session.class);
-
         T value = em.find(domainClass, id);
 
         if(value == null) {
+            Session session = em.unwrap(Session.class);
+
             value = session.load(domainClass, (Serializable) id);
+
             em.persist(value);
         }
 
@@ -80,9 +82,9 @@ public class Repository<T, ID> {
         return entity;
     }
 
-    public void delete(T entity) throws MyException.NullDataException {
+    public void delete(T entity) throws DatabaseException {
         if(entity == null) {
-            throw new MyException.NullDataException("cannot delete this entity doesn't exist.");
+            throw new DatabaseException.NotExistException("cannot delete this entity doesn't exist.");
         }
 
         em.getTransaction().begin();
@@ -92,10 +94,9 @@ public class Repository<T, ID> {
             ID id = (ID) em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
             T existing = em.find(domainClass, id);
             if(existing == null) {
-                throw new MyException.NullDataException("cannot delete this entity doesn't exist.");
+                throw new DatabaseException.NotExistException("cannot delete this entity doesn't exist.");
             }
 
-            em.detach(entity);
             em.remove(em.contains(entity) ? entity : em.merge(entity));
             em.flush();
 
@@ -103,6 +104,7 @@ public class Repository<T, ID> {
 
         } catch (RuntimeException e) {
             em.getTransaction().rollback();
+            throw new DatabaseException("occurred internal database error.");
         }
     }
 

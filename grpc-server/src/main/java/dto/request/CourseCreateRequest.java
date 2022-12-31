@@ -1,19 +1,17 @@
-package vo;
+package dto.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseVO {
-    private Long id;
+public class CourseCreateRequest {
     private String courseId;
     private String profName;
     private String courseName;
-    private Set<CourseVO> prerequisite;
-
+    private List<String> prerequisiteIds;
 }
