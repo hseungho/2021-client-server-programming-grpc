@@ -141,7 +141,7 @@ public class ServerGrpc {
     }
 
     public ClientServer.Status register(ClientServer.Register registerDto) {
-        info(String.format("register [S_ID: %s, C_ID: %s", registerDto.getStudentId(), registerDto.getCourseId()));
+        info(String.format("register [S_ID: %s, C_ID: %s]", registerDto.getStudentId(), registerDto.getCourseId()));
         try {
             registerService.register(registerDto.getStudentId(), registerDto.getCourseId());
         } catch (MyException e) {
@@ -151,6 +151,16 @@ public class ServerGrpc {
                     .build();
         }
         return ClientServer.Status.newBuilder().setStatus(200).build();
+    }
+
+    public ClientServer.CourseList getAllRegisterOfStudent(ClientServer.Id studentId) {
+        info(String.format("getAllRegisterOfStudent [S_ID: %s]", studentId.getId()));
+        try {
+            registerService.getAllRegisterCourseOfStudent(studentId.getId());
+        } catch (MyException e) {
+            return  ClientServer.CourseList.newBuilder()
+                    .setStatus(409)
+        }
     }
 
     private static void info(String log) {
