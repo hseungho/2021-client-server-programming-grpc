@@ -1,6 +1,7 @@
 import applicationservice.StudentService;
 import dto.request.StudentCreateRequest;
 import entity.Student;
+import exception.LMSException;
 import exception.NotFoundStudentIdException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,6 @@ class StudentServiceTest {
     @Test
     void 학생데이터_전체조회() {
         List<Student> studentList = studentService.getAllStudentList();
-//        System.out.println(students);
         assertEquals("20100123", studentList.get(0).getStudentId());
     }
 
@@ -65,7 +65,7 @@ class StudentServiceTest {
 
         try {
             studentService.addStudent(new_student);
-        } catch (MyException.DuplicationDataException e) {
+        } catch (LMSException e) {
             System.err.println(e.getMessage());
         }
         Student student_2 = studentService.getStudentByStudentId("20221222");
