@@ -5,7 +5,6 @@ import entity.Course;
 import exception.DatabaseException;
 import exception.LMSException;
 import exception.NotFoundCourseIdException;
-import exception.NotFoundStudentIdException;
 import repository.CourseRepository;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public class CourseService {
 
         } catch (DatabaseException.NotExistException e) {
             System.err.println("LOG: "+e.getMessage());
-            throw new NotFoundStudentIdException();
+            throw new NotFoundCourseIdException();
 
         } catch (DatabaseException e) {
             System.err.println("LOG: "+e.getMessage());

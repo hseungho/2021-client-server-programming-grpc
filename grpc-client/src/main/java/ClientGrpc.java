@@ -97,9 +97,13 @@ public class ClientGrpc {
                     default -> System.err.println("Incorrect Menu !!");
                 }
             } catch (MyException e) {
-                System.err.println(e.getMessage());
+                synchronized (this) {
+                    System.err.println(e.getMessage());
+                }
             } catch (StatusRuntimeException e) {
-                System.err.println("sorry, we cannot service that request.");
+                synchronized (this) {
+                    System.err.println("sorry, we cannot service that request.");
+                }
             }
         }
     }
