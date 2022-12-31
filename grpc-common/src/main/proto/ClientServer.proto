@@ -10,7 +10,7 @@ service ClientServerProto {
   rpc addCourse(Course) returns (Status);
   rpc deleteCourse(Id) returns (Status);
   rpc register(Register) returns (Status);
-  rpc getAllRegisterData(Id) returns (Student);
+  rpc getAllRegisterData(Id) returns (CourseList);
 }
 
 message Status {
