@@ -2,6 +2,7 @@ import applicationservice.StudentService;
 import dto.request.StudentCreateRequest;
 import entity.Student;
 import exception.MyException;
+import exception.NotFoundStudentIdException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import repository.CourseRepository;
@@ -85,7 +86,7 @@ class StudentServiceTest {
 
         // 없는 아이디 삭제 요청
         String studentId_2 = "2000000";
-        assertThrows(MyException.InvalidedDataException.class, () -> {
+        assertThrows(NotFoundStudentIdException.class, () -> {
             studentService.deleteStudent(studentId_2);
         });
     }
