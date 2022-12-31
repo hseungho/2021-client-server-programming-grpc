@@ -32,7 +32,7 @@ message Student {
 }
 
 message StudentList {
-  string status = 1;
+  Status status = 1;
   repeated Student student = 2;
 }
 
@@ -45,7 +45,7 @@ message Course {
 }
 
 message CourseList {
-  string status = 1;
+  Status status = 1;
   repeated Course course = 2;
 }
 
