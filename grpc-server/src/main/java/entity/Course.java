@@ -60,7 +60,7 @@ public class Course {
         this.getPrerequisite()
                 .forEach(preCourse -> {
                     if(!completedCourseList.contains(preCourse)) {
-                        throw new LMSException("Have not completed prerequisite course of this course");
+                        throw new LMSException("Have not completed prerequisite course of this course.");
                     }
                 });
     }
