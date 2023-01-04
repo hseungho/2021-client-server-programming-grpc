@@ -62,13 +62,20 @@ main
   └─resources
 ````
 ***
+<<<<<<< HEAD
 
 ### <p align="center">Stack</p>
 
+=======
+### <p align="center">Stack</p>
+>>>>>>> 93324ee347aac23197d40fcff8f9378d9c30d1f7
 ![stack.png](readme.img/stack.png)
 
 ***
+<<<<<<< HEAD
 
+=======
+>>>>>>> 93324ee347aac23197d40fcff8f9378d9c30d1f7
 ### <p align="center">Runtime View</p>
 ![img.png](readme.img/runview_img.png)
 
