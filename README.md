@@ -4,6 +4,8 @@
 2021년 2학기 명지대학교 클라이언트서버 프로그래밍 강의에서 RMI 프로토콜을 이용하여  
 구현한 LMS 프로그램을 gRPC 프로토콜로 구현한 프로그램입니다.
 
+***
+
 ### <p align="center">Architecture</p>
 프로젝트 안에는 3개의 모듈이 있습니다.
 1. **grpc-common** : client와 server가 함께 공유하는 proto 파일 정의한 모듈
