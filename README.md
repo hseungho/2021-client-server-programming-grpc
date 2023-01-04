@@ -1,8 +1,22 @@
 # LMS 프로그램 - gRPC
 
+## Index
+- [Description](#description)
+- [Architecture](#p-aligncenter-architecture-p)
+  - [Project Structure](#p-aligncenter-project-structure-p)
+  - [Stack](#p-aligncenter-stack-p)
+  - [Runtime View](#p-aligncenter-runtime-view-p)
+- [Environment](#environment)
+- [Prerequisite](#prerequisite)
+- [Usage](#usage)
+
+***
+
 ## Description
 2021년 2학기 명지대학교 클라이언트서버 프로그래밍 강의에서 RMI 프로토콜을 이용하여  
 구현한 LMS 프로그램을 gRPC 프로토콜로 구현한 프로그램입니다.
+
+***
 
 ### <p align="center">Architecture</p>
 프로젝트 안에는 3개의 모듈이 있습니다.
@@ -13,7 +27,7 @@
 RMI 프로토콜을 이용한 프로젝트에서는 client - server - data에 해당하는 세 개의 프로세스들을 각각 구현하였지만, 
 본 프로젝트에서는 data에 해당하는 프로세스를 RDBMS로 전환하였고, Hibernate로 트랜잭션을 처리하였습니다.
 ***
-**<p align="center">Project Structure</p>**
+### <p align="center">Project Structure</p>
 - grpc-common
 ````
 main
@@ -48,11 +62,16 @@ main
   └─resources
 ````
 ***
-**<p align="center">Stack</p>**
+
+### <p align="center">Stack</p>
+
 ![stack.png](readme.img/stack.png)
+
 ***
-**<p align="center">Runtime View</p>**
+
+### <p align="center">Runtime View</p>
 ![img.png](readme.img/runview_img.png)
+
 ***
 
 ## Environment
