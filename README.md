@@ -26,7 +26,9 @@
 
 RMI 프로토콜을 이용한 프로젝트에서는 client - server - data에 해당하는 세 개의 프로세스들을 각각 구현하였지만, 
 본 프로젝트에서는 data에 해당하는 프로세스를 RDBMS로 전환하였고, Hibernate로 트랜잭션을 처리하였습니다.
+
 ***
+
 ### <p align="center">Project Structure</p>
 - grpc-common
 ````
@@ -61,21 +63,14 @@ main
   ├─proto
   └─resources
 ````
+
 ***
-<<<<<<< HEAD
 
 ### <p align="center">Stack</p>
-
-=======
-### <p align="center">Stack</p>
->>>>>>> 93324ee347aac23197d40fcff8f9378d9c30d1f7
 ![stack.png](readme.img/stack.png)
 
 ***
-<<<<<<< HEAD
 
-=======
->>>>>>> 93324ee347aac23197d40fcff8f9378d9c30d1f7
 ### <p align="center">Runtime View</p>
 ![img.png](readme.img/runview_img.png)
 
