@@ -2,10 +2,7 @@
 
 ## Index
 - [Description](#description)
-- [Architecture](#p-aligncenter-architecture-p)
-  - [Project Structure](#p-aligncenter-project-structure-p)
-  - [Stack](#p-aligncenter-stack-p)
-  - [Runtime View](#p-aligncenter-runtime-view-p)
+- [Architecture](#architecture)
 - [Environment](#environment)
 - [Prerequisite](#prerequisite)
 - [Usage](#usage)
